@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Матчи</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f5f8;
+            color: #111;
+        }
+        header {
+            background: #000056;
+            color: white;
+            padding: 22px 20px;
+        }
+        header h1 {
+            max-width: 1100px;
+            margin: auto;
+            font-size: 28px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+        .title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 25px;
+        }
+        .matches {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+        .match {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            border: 1px solid #e2e2e2;
+            transition: 0.2s;
+        }
+        .match:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        .teams {
+            font-size: 23px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+        .date {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+        .time {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+        .place {
+            color: #666;
+            font-size: 16px;
+        }
+        .empty {
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            text-align: center;
+            color: #777;
+        }
+        @media (max-width: 700px) {
+            .matches {
+                grid-template-columns: 1fr;
+            }
+            .title {
+                font-size: 27px;
+            }
+            .teams {
+                font-size: 21px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>МАТЧИ</h1>
+</header>
+<main class="container">
+    <div class="title">Матчи</div>
+    <div id="matches" class="matches"></div>
+</main>
+<script>
+    function getMatches() {
+        return JSON.parse(localStorage.getItem("matches")) || [];
+    }
+    function formatDate(date) {
+        const parts = date.split("-");
+        if (parts.length !== 3) {
+            return date;
+        }
+        return `${parts[2]} ${getMonth(parts[1])} ${parts[0]}`;
+    }
+    function getMonth(month) {
+        const months = {
+            "01": "января",
+            "02": "февраля",
+            "03": "марта",
+            "04": "апреля",
+            "05": "мая",
+            "06": "июня",
+            "07": "июля",
+            "08": "августа",
+            "09": "сентября",
+            "10": "октября",
+            "11": "ноября",
+            "12": "декабря"
+        };
+        return months[month] || month;
+    }
+    function showMatches() {
+        const container = document.getElementById("matches");
+        const matches = getMatches();
+        container.innerHTML = "";
+        if (matches.length === 0) {
+            container.innerHTML = `
+                <div class="empty">
+                    Пока матчей нет
+                </div>
+            `;
+            return;
+        }
+        matches.forEach(match => {
+            const card = document.createElement("div");
+            card.className = "match";
+            card.innerHTML = `
+                <div class="teams">
+                    ${escapeHtml(match.team1)} — ${escapeHtml(match.team2)}
+                </div>
+                <div class="date">
+                    ${formatDate(match.date)}
+                </div>
+                <div class="time">
+                    ${escapeHtml(match.time)}
+                </div>
+                <div class="place">
+                    ${escapeHtml(match.place)}
+                </div>
+            `;
+            card.onclick = () => {
+                localStorage.setItem("selectedMatch", match.id);
+                window.location.href = "match.html";
+            };
+            container.appendChild(card);
+        });
+    }
+    function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text || "";
+        return div.innerHTML;
+    }
+    showMatches();
+</script>
+</body>
+</html>
