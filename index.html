@@ -1,235 +1,204 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Матчи</title>
+<title>Матчи</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
+<style>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            font-family: "Unbounded", sans-serif;
-            background: #f5f5f5;
-            color: #202024;
-        }
+body {
+    font-family: "Unbounded", sans-serif;
+    background: #f3f3f3;
+    color: #1d1d1f;
+}
 
-        /* HEADER */
+/* HEADER */
 
-        header {
-            background: #202024;
-            color: white;
-            padding: 22px 25px;
-        }
+header {
+    background: #171719;
+    color: white;
+    padding: 25px;
+}
 
-        .header-inner {
-            max-width: 1200px;
-            margin: auto;
+.header-inner {
+    max-width: 1150px;
+    margin: auto;
+}
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.logo {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
 
-        .logo {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
+/* MAIN */
 
-        .admin-link {
-            color: white;
-            text-decoration: none;
-            font-size: 11px;
-            opacity: .6;
-        }
+.container {
+    max-width: 1150px;
+    margin: auto;
+    padding: 55px 25px 80px;
+}
 
-        /* MAIN */
+.page-title {
+    font-size: 48px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 35px;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 55px 25px 80px;
-        }
+/* MATCHES */
 
-        .page-title {
-            font-size: 48px;
-            line-height: 1.1;
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 40px;
-        }
+.matches {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
 
-        /* MATCHES */
+.match {
+    background: #fff;
+    border-radius: 25px;
+    padding: 30px;
 
-        .matches {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
+    cursor: pointer;
 
-        .match {
-            position: relative;
+    border: 1px solid #e5e5e5;
 
-            background: white;
-            border-radius: 28px;
+    transition: .2s ease;
+}
 
-            padding: 30px 32px;
+.match:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,.09);
+}
 
-            cursor: pointer;
+.match-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease;
-        }
+    margin-bottom: 28px;
+}
 
-        .match:hover {
-            transform: translateY(-4px);
+.match-date {
+    font-size: 12px;
+    font-weight: 500;
+    color: #777;
+}
 
-            box-shadow:
-                0 15px 40px rgba(0,0,0,.08);
-        }
+.arrow {
+    width: 44px;
+    height: 44px;
 
-        .match-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            gap: 20px;
+    border-radius: 50%;
 
-            margin-bottom: 32px;
-        }
+    background: #eeeeef;
 
-        .match-date {
-            font-size: 12px;
-            color: #777;
-            font-weight: 500;
-        }
+    font-size: 20px;
 
-        .arrow {
-            width: 42px;
-            height: 42px;
+    transition: .2s;
+}
 
-            border-radius: 50%;
+.match:hover .arrow {
+    background: #ff5a1f;
+    color: white;
+}
 
-            background: #f1f1f1;
+.teams {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.4;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    letter-spacing: -1px;
 
-            font-size: 20px;
+    margin-bottom: 28px;
+}
 
-            transition: .2s;
-        }
+.match-bottom {
+    display: flex;
+    gap: 25px;
 
-        .match:hover .arrow {
-            background: #ff5b22;
-            color: white;
-        }
+    font-size: 12px;
+    color: #777;
+}
 
-        .teams {
-            font-size: 28px;
-            line-height: 1.35;
-            font-weight: 700;
+.time {
+    color: #171719;
+    font-weight: 700;
+}
 
-            letter-spacing: -1px;
-        }
+.empty {
+    background: white;
+    border-radius: 25px;
 
-        .match-bottom {
-            display: flex;
-            gap: 25px;
+    padding: 60px 25px;
 
-            color: #777;
+    text-align: center;
 
-            font-size: 12px;
-        }
+    color: #888;
 
-        .match-bottom span {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
+    font-size: 13px;
+}
 
-        .time {
-            color: #202024;
-            font-weight: 700;
-        }
+/* MOBILE */
 
-        /* EMPTY */
+@media(max-width:700px) {
 
-        .empty {
-            background: white;
+    header {
+        padding: 21px;
+    }
 
-            border-radius: 28px;
+    .logo {
+        font-size: 16px;
+    }
 
-            padding: 60px 30px;
+    .container {
+        padding: 38px 16px 60px;
+    }
 
-            text-align: center;
+    .page-title {
+        font-size: 34px;
+        margin-bottom: 25px;
+    }
 
-            color: #888;
+    .match {
+        padding: 23px;
+        border-radius: 22px;
+    }
 
-            font-size: 14px;
-        }
+    .teams {
+        font-size: 20px;
+        line-height: 1.5;
+    }
 
-        /* MOBILE */
+    .match-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
 
-        @media (max-width: 700px) {
+    .arrow {
+        width: 38px;
+        height: 38px;
+    }
+}
 
-            header {
-                padding: 20px;
-            }
-
-            .logo {
-                font-size: 16px;
-            }
-
-            .container {
-                padding: 38px 16px 60px;
-            }
-
-            .page-title {
-                font-size: 34px;
-                margin-bottom: 25px;
-            }
-
-            .match {
-                border-radius: 23px;
-                padding: 23px;
-            }
-
-            .match-top {
-                margin-bottom: 25px;
-            }
-
-            .teams {
-                font-size: 20px;
-                line-height: 1.5;
-            }
-
-            .match-bottom {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .arrow {
-                width: 36px;
-                height: 36px;
-                flex-shrink: 0;
-            }
-        }
-
-    </style>
+</style>
 </head>
 
 <body>
@@ -242,10 +211,6 @@
             REF HOCKEY
         </div>
 
-        <a href="admin.html" class="admin-link">
-            ADMIN
-        </a>
-
     </div>
 
 </header>
@@ -257,166 +222,166 @@
         МАТЧИ
     </h1>
 
-    <div id="matches" class="matches"></div>
+    <div
+        id="matches"
+        class="matches">
+    </div>
 
 </main>
 
 
 <script>
 
-    function getMatches() {
+function getMatches() {
 
-        return JSON.parse(
-            localStorage.getItem("matches")
-        ) || [];
+    return JSON.parse(
+        localStorage.getItem("matches")
+    ) || [];
+
+}
+
+
+function getMonth(month) {
+
+    const months = {
+        "01":"января",
+        "02":"февраля",
+        "03":"марта",
+        "04":"апреля",
+        "05":"мая",
+        "06":"июня",
+        "07":"июля",
+        "08":"августа",
+        "09":"сентября",
+        "10":"октября",
+        "11":"ноября",
+        "12":"декабря"
+    };
+
+    return months[month] || month;
+
+}
+
+
+function formatDate(date) {
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) {
+        return date;
+    }
+
+    return `${parts[2]} ${getMonth(parts[1])} ${parts[0]}`;
+
+}
+
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+function showMatches() {
+
+    const container =
+        document.getElementById("matches");
+
+    const matches =
+        getMatches();
+
+
+    container.innerHTML = "";
+
+
+    if (matches.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                ПОКА НЕТ МАТЧЕЙ
+            </div>
+        `;
+
+        return;
 
     }
 
 
-    function getMonth(month) {
+    matches.forEach(match => {
 
-        const months = {
-            "01": "января",
-            "02": "февраля",
-            "03": "марта",
-            "04": "апреля",
-            "05": "мая",
-            "06": "июня",
-            "07": "июля",
-            "08": "августа",
-            "09": "сентября",
-            "10": "октября",
-            "11": "ноября",
-            "12": "декабря"
-        };
-
-        return months[month] || month;
-
-    }
-
-
-    function formatDate(date) {
-
-        const parts = date.split("-");
-
-        if (parts.length !== 3) {
-            return date;
-        }
-
-        return `${parts[2]} ${getMonth(parts[1])} ${parts[0]}`;
-
-    }
-
-
-    function escapeHtml(text) {
-
-        const div =
+        const card =
             document.createElement("div");
 
-        div.textContent =
-            text || "";
-
-        return div.innerHTML;
-
-    }
+        card.className = "match";
 
 
-    function showMatches() {
+        card.innerHTML = `
 
-        const container =
-            document.getElementById("matches");
+            <div class="match-top">
 
-        const matches =
-            getMatches();
-
-
-        container.innerHTML = "";
-
-
-        if (matches.length === 0) {
-
-            container.innerHTML = `
-                <div class="empty">
-                    Пока нет запланированных матчей
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        matches.forEach(match => {
-
-            const card =
-                document.createElement("div");
-
-            card.className = "match";
-
-
-            card.innerHTML = `
-
-                <div class="match-top">
-
-                    <div class="match-date">
-                        ${formatDate(match.date)}
-                    </div>
-
-                    <div class="arrow">
-                        →
-                    </div>
-
+                <div class="match-date">
+                    ${formatDate(match.date)}
                 </div>
 
-
-                <div class="teams">
-
-                    ${escapeHtml(match.team1)}
-
-                    —
-
-                    ${escapeHtml(match.team2)}
-
+                <div class="arrow">
+                    →
                 </div>
 
-
-                <div class="match-bottom">
-
-                    <span class="time">
-                        ${escapeHtml(match.time)}
-                    </span>
-
-                    <span>
-                        ●
-                        ${escapeHtml(match.place)}
-                    </span>
-
-                </div>
-
-            `;
+            </div>
 
 
-            card.onclick = () => {
+            <div class="teams">
 
-                localStorage.setItem(
-                    "selectedMatch",
-                    match.id
-                );
+                ${escapeHtml(match.team1)}
+                —
+                ${escapeHtml(match.team2)}
 
-                window.location.href =
-                    "match.html";
-
-            };
+            </div>
 
 
-            container.appendChild(card);
+            <div class="match-bottom">
 
-        });
+                <span class="time">
+                    ${escapeHtml(match.time)}
+                </span>
 
-    }
+                <span>
+                    ${escapeHtml(match.place)}
+                </span>
+
+            </div>
+
+        `;
 
 
-    showMatches();
+        card.onclick = () => {
+
+            localStorage.setItem(
+                "selectedMatch",
+                match.id
+            );
+
+            window.location.href =
+                "match.html";
+
+        };
+
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+showMatches();
 
 </script>
 
