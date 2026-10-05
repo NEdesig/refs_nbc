@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Матч</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f5f8;
+            color: #111;
+        }
+
+        header {
+            background: #000056;
+            color: white;
+            padding: 22px 20px;
+        }
+
+        header div {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .back {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .back:hover {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .teams {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 25px;
+        }
+
+        .date {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .time {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .place {
+            color: #666;
+            font-size: 17px;
+        }
+
+        .brigade {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+        }
+
+        .brigade-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 22px;
+        }
+
+        .person {
+            padding: 17px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .person:last-child {
+            border-bottom: none;
+        }
+
+        .role {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .error {
+            background: white;
+            border-radius: 18px;
+            padding: 35px;
+            text-align: center;
+            color: #777;
+        }
+
+        @media (max-width: 600px) {
+
+            .teams {
+                font-size: 25px;
+            }
+
+            .match-card,
+            .brigade {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <a href="index.html" class="back">
+            ← Все матчи
+        </a>
+    </div>
+</header>
+
+
+<main class="container">
+
+    <div id="content"></div>
+
+</main>
+
+
+<script>
+
+    function getMatches() {
+        return JSON.parse(localStorage.getItem("matches")) || [];
+    }
+
+
+    function getMonth(month) {
+
+        const months = {
+            "01": "января",
+            "02": "февраля",
+            "03": "марта",
+            "04": "апреля",
+            "05": "мая",
+            "06": "июня",
+            "07": "июля",
+            "08": "августа",
+            "09": "сентября",
+            "10": "октября",
+            "11": "ноября",
+            "12": "декабря"
+        };
+
+        return months[month] || month;
+    }
+
+
+    function formatDate(date) {
+
+        const parts = date.split("-");
+
+        if (parts.length !== 3) {
+            return date;
+        }
+
+        return `${parts[2]} ${getMonth(parts[1])} ${parts[0]}`;
+    }
+
+
+    function escapeHtml(text) {
+
+        const div = document.createElement("div");
+
+        div.textContent = text || "";
+
+        return div.innerHTML;
+    }
+
+
+    function addPerson(container, role, name) {
+
+        if (!name || !name.trim()) {
+            return;
+        }
+
+        const person = document.createElement("div");
+
+        person.className = "person";
+
+        person.innerHTML = `
+            <div class="role">
+                ${escapeHtml(role)}
+            </div>
+
+            <div class="name">
+                ${escapeHtml(name)}
+            </div>
+        `;
+
+        container.appendChild(person);
+    }
+
+
+    function showMatch() {
+
+        const content =
+            document.getElementById("content");
+
+        const selectedId =
+            Number(localStorage.getItem("selectedMatch"));
+
+        const matches = getMatches();
+
+        const match =
+            matches.find(item => item.id === selectedId);
+
+
+        if (!match) {
+
+            content.innerHTML = `
+                <div class="error">
+                    Матч не найден.
+                    <br><br>
+                    <a href="index.html">
+                        Вернуться к матчам
+                    </a>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        content.innerHTML = `
+
+            <section class="match-card">
+
+                <div class="teams">
+                    ${escapeHtml(match.team1)}
+                    —
+                    ${escapeHtml(match.team2)}
+                </div>
+
+                <div class="date">
+                    ${formatDate(match.date)}
+                </div>
+
+                <div class="time">
+                    ${escapeHtml(match.time)}
+                </div>
+
+                <div class="place">
+                    ${escapeHtml(match.place)}
+                </div>
+
+            </section>
+
+
+            <section class="brigade">
+
+                <div class="brigade-title">
+                    Судейская бригада
+                </div>
+
+                <div id="people"></div>
+
+            </section>
+        `;
+
+
+        const people =
+            document.getElementById("people");
+
+
+        addPerson(
+            people,
+            "Главный судья",
+            match.mainReferee1
+        );
+
+
+        addPerson(
+            people,
+            "Главный судья",
+            match.mainReferee2
+        );
+
+
+        addPerson(
+            people,
+            "Линейный судья",
+            match.lineReferee1
+        );
+
+
+        addPerson(
+            people,
+            "Линейный судья",
+            match.lineReferee2
+        );
+
+
+        addPerson(
+            people,
+            "Секретарь матча",
+            match.secretary
+        );
+
+
+        addPerson(
+            people,
+            "Информатор",
+            match.announcer
+        );
+
+
+        addPerson(
+            people,
+            "Судьи при оштрафованных",
+            match.penaltyJudges
+        );
+
+
+        addPerson(
+            people,
+            "Судьи за воротами",
+            match.goalJudges
+        );
+
+
+        if (people.innerHTML.trim() === "") {
+
+            people.innerHTML = `
+                <div style="color:#777;">
+                    Судейская бригада пока не назначена.
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    showMatch();
+
+</script>
+
+</body>
+</html>
