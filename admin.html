@@ -1,1073 +1,717 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Админ-панель — REF HOCKEY</title>
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
 
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Админка — REF HOCKEY</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="style.css">
 
-<style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    background:#eeeeee;
-    color:#111;
-    font-family:'Unbounded',sans-serif;
-}
-
-header{
-    background:#111;
-    color:#fff;
-    padding:22px 30px;
-    font-size:21px;
-    font-weight:700;
-}
-
-.container{
-    max-width:1200px;
-    margin:30px auto;
-    padding:0 20px;
-}
-
-.tabs{
-    display:flex;
-    gap:10px;
-    margin-bottom:25px;
-}
-
-.tab{
-    border:0;
-    background:#d3d3d3;
-    padding:15px 22px;
-    font-family:inherit;
-    font-weight:600;
-    cursor:pointer;
-}
-
-.tab.active{
-    background:#ff6a00;
-    color:#fff;
-}
-
-.panel{
-    display:none;
-}
-
-.panel.active{
-    display:block;
-}
-
-.card{
-    background:#fff;
-    padding:25px;
-    margin-bottom:25px;
-    border-left:5px solid #ff6a00;
-}
-
-h2{
-    margin:0 0 22px;
-    font-size:19px;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:15px;
-}
-
-.form-group{
-    display:flex;
-    flex-direction:column;
-    gap:7px;
-}
-
-label{
-    font-size:10px;
-    font-weight:600;
-}
-
-input,
-select{
-    padding:13px;
-    border:1px solid #ccc;
-    background:#fff;
-    font-family:inherit;
-    font-size:11px;
-    width:100%;
-}
-
-.save{
-    margin-top:20px;
-    padding:15px 22px;
-    border:0;
-    background:#ff6a00;
-    color:#fff;
-    font-family:inherit;
-    font-weight:700;
-    cursor:pointer;
-}
-
-.save:hover{
-    background:#111;
-}
-
-.item{
-    background:#f4f4f4;
-    padding:18px;
-    margin-top:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-}
-
-.actions{
-    display:flex;
-    gap:8px;
-}
-
-.edit,
-.delete{
-    border:0;
-    padding:10px 13px;
-    color:#fff;
-    font-family:inherit;
-    font-size:10px;
-    cursor:pointer;
-}
-
-.edit{
-    background:#555;
-}
-
-.delete{
-    background:#111;
-}
-
-.add-referee{
-    display:flex;
-    gap:10px;
-}
-
-.add-referee input{
-    flex:1;
-}
-
-.status{
-    margin-top:15px;
-    font-size:11px;
-}
-
-.success{
-    color:#168000;
-}
-
-.error{
-    color:#b00000;
-}
-
-@media(max-width:700px){
-
-    .form-grid{
-        grid-template-columns:1fr;
-    }
-
-    .tabs{
-        flex-direction:column;
-    }
-
-    .item{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .add-referee{
-        flex-direction:column;
-    }
-
-}
-
-</style>
 </head>
+
 
 <body>
 
-<header>
-    REF HOCKEY — АДМИН-ПАНЕЛЬ
+<header class="top">
+
+  <div class="top-inner">
+
+    <a class="logo" href="index.html">
+      REF HOCKEY
+    </a>
+
+    <nav class="nav">
+
+      <a href="index.html">
+        Матчи
+      </a>
+
+      <a class="active" href="admin.html">
+        Админка
+      </a>
+
+    </nav>
+
+  </div>
+
 </header>
 
 
-<div class="container">
+<main class="wrap">
 
-    <div class="tabs">
-
-        <button
-            class="tab active"
-            onclick="showTab('matches',this)"
-        >
-            МАТЧИ
-        </button>
-
-        <button
-            class="tab"
-            onclick="showTab('referees',this)"
-        >
-            РЕЕСТР СУДЕЙ
-        </button>
-
-    </div>
+  <h1
+    class="section-title"
+    style="margin-top:10px"
+  >
+    АДМИНКА
+  </h1>
 
 
-    <!-- МАТЧИ -->
-
-    <section
-        id="matches"
-        class="panel active"
-    >
-
-        <div class="card">
-
-            <h2 id="formTitle">
-                ДОБАВИТЬ МАТЧ
-            </h2>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label>КОМАНДА 1</label>
-                    <input id="team1">
-                </div>
-
-                <div class="form-group">
-                    <label>КОМАНДА 2</label>
-                    <input id="team2">
-                </div>
-
-                <div class="form-group">
-                    <label>ДАТА</label>
-                    <input id="date" type="date">
-                </div>
-
-                <div class="form-group">
-                    <label>ВРЕМЯ</label>
-                    <input id="time" type="time">
-                </div>
-
-                <div class="form-group">
-                    <label>МЕСТО</label>
-                    <input id="place">
-                </div>
-
-                <div class="form-group">
-                    <label>ГЛАВНЫЙ СУДЬЯ 1</label>
-                    <select id="ref1"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>ГЛАВНЫЙ СУДЬЯ 2</label>
-                    <select id="ref2"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>ЛИНЕЙНЫЙ СУДЬЯ 1</label>
-                    <select id="line1"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>ЛИНЕЙНЫЙ СУДЬЯ 2</label>
-                    <select id="line2"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>СЕКРЕТАРЬ МАТЧА</label>
-                    <select id="secretary"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>ИНФОРМАТОР</label>
-                    <select id="announcer"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>СУДЬЯ ПРИ ОШТРАФОВАННЫХ 1</label>
-                    <select id="penalty1"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>СУДЬЯ ПРИ ОШТРАФОВАННЫХ 2</label>
-                    <select id="penalty2"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>СУДЬЯ ЗА ВОРОТАМИ 1</label>
-                    <select id="goal1"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>СУДЬЯ ЗА ВОРОТАМИ 2</label>
-                    <select id="goal2"></select>
-                </div>
-
-            </div>
-
-            <button
-                class="save"
-                onclick="saveMatch()"
-            >
-                СОХРАНИТЬ МАТЧ
-            </button>
-
-            <div id="matchStatus" class="status"></div>
-
-        </div>
-
-
-        <div class="card">
-
-            <h2>МАТЧИ</h2>
-
-            <div id="matchesList">
-                Загрузка...
-            </div>
-
-        </div>
-
-    </section>
+  <div class="admin-grid">
 
 
     <!-- РЕЕСТР -->
 
-    <section
-        id="referees"
-        class="panel"
-    >
+    <section class="panel">
 
-        <div class="card">
-
-            <h2>ДОБАВИТЬ СУДЬЮ</h2>
-
-            <div class="add-referee">
-
-                <input
-                    id="refereeName"
-                    placeholder="ФИО судьи"
-                >
-
-                <button
-                    class="save"
-                    onclick="addReferee()"
-                >
-                    ДОБАВИТЬ
-                </button>
-
-            </div>
-
-            <div id="refStatus" class="status"></div>
-
-        </div>
+      <h2>
+        РЕЕСТР СУДЕЙ
+      </h2>
 
 
-        <div class="card">
+      <form id="refForm">
 
-            <h2>РЕЕСТР СУДЕЙ</h2>
+        <label>
+          ФИО судьи
+        </label>
 
-            <div id="refereesList">
-                Загрузка...
-            </div>
+        <input
+          id="refName"
+          required
+          placeholder="Иванов Иван Иванович"
+        >
 
-        </div>
+        <br><br>
+
+        <button
+          class="btn"
+          type="submit"
+        >
+          ДОБАВИТЬ СУДЬЮ
+        </button>
+
+      </form>
+
+
+      <div
+        id="refStatus"
+        class="status"
+      ></div>
+
+
+      <div
+        id="refList"
+        class="list"
+      ></div>
 
     </section>
 
-</div>
+
+
+    <!-- ДОБАВЛЕНИЕ МАТЧА -->
+
+    <section class="panel">
+
+      <h2>
+        ДОБАВИТЬ МАТЧ
+      </h2>
+
+
+      <form id="matchForm">
+
+        <div class="form-grid">
+
+
+          <div>
+
+            <label>
+              КОМАНДА 1
+            </label>
+
+            <input
+              id="team1"
+              required
+              placeholder="Челны"
+            >
+
+          </div>
+
+
+          <div>
+
+            <label>
+              КОМАНДА 2
+            </label>
+
+            <input
+              id="team2"
+              required
+              placeholder="Нефтяник"
+            >
+
+          </div>
+
+
+          <div>
+
+            <label>
+              ДАТА
+            </label>
+
+            <input
+              id="date"
+              type="date"
+              required
+            >
+
+          </div>
+
+
+          <div>
+
+            <label>
+              ВРЕМЯ
+            </label>
+
+            <input
+              id="time"
+              type="time"
+            >
+
+          </div>
+
+
+          <div class="full">
+
+            <label>
+              МЕСТО
+            </label>
+
+            <input
+              id="place"
+              placeholder="Лд Основной"
+            >
+
+          </div>
+
+
+          <div
+            id="refFields"
+            class="full"
+          ></div>
+
+
+          <div class="full">
+
+            <button
+              class="btn"
+              type="submit"
+            >
+              ДОБАВИТЬ МАТЧ
+            </button>
+
+          </div>
+
+
+        </div>
+
+      </form>
+
+
+      <div
+        id="matchStatus"
+        class="status"
+      ></div>
+
+    </section>
+
+  </div>
+
+
+
+  <!-- СПИСОК МАТЧЕЙ -->
+
+  <section
+    class="panel"
+    style="margin-top:20px"
+  >
+
+    <h2>
+      ДОБАВЛЕННЫЕ МАТЧИ
+    </h2>
+
+
+    <div
+      id="matchList"
+      class="list"
+    ></div>
+
+  </section>
+
+</main>
+
+
+<script src="config.js"></script>
 
 
 <script>
 
-const SUPABASE_URL =
-    "https://ckfwxtirevtzgrzwypio.supabase.co";
+const roleFields = [
 
-const SUPABASE_KEY =
-    "sb_publishable_N55S09HuLN-2XlnYCjE61w_AKX12EuB";
+  ["Главный судья","ref1"],
 
-const supabase =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+  ["Главный судья","ref2"],
+
+  ["Линейный судья","line1"],
+
+  ["Линейный судья","line2"],
+
+  ["Секретарь матча","secretary"],
+
+  ["Информатор","announcer"],
+
+  ["Судья при оштрафованных","penalty1"],
+
+  ["Судья при оштрафованных","penalty2"],
+
+  ["Судья за воротами","goal1"],
+
+  ["Судья за воротами","goal2"]
+
+];
 
 
 let referees = [];
-let matches = [];
-let editingId = null;
 
 
-/* TABS */
 
-function showTab(tab,button){
+function renderRefFields(){
 
-    document
-        .querySelectorAll(".panel")
-        .forEach(el =>
-            el.classList.remove("active")
-        );
+  document.getElementById("refFields").innerHTML =
 
-    document
-        .querySelectorAll(".tab")
-        .forEach(el =>
-            el.classList.remove("active")
-        );
+    roleFields.map(([label,key]) => `
 
-    document
-        .getElementById(tab)
-        .classList.add("active");
+      <div style="margin-bottom:10px">
 
-    button.classList.add("active");
-}
+        <label>
+          ${label}
+        </label>
 
+        <select id="${key}">
 
-/* ESCAPE */
+          <option value="">
+            — не назначен —
+          </option>
 
-function escapeHtml(text){
+          ${
+            referees.map(r => `
 
-    return String(text || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
+              <option value="${r.id}">
+                ${esc(r.name)}
+              </option>
 
+            `).join("")
+          }
 
-/* LOAD REFEREES */
+        </select>
 
-async function loadReferees(){
+      </div>
 
-    const { data,error } =
-        await supabase
-            .from("referees")
-            .select("*")
-            .order("name",{ascending:true});
-
-    if(error){
-
-        console.error(error);
-
-        document.getElementById("refereesList")
-            .innerHTML =
-            `<div class="error">
-                Ошибка загрузки реестра.
-            </div>`;
-
-        return;
-    }
-
-    referees = data || [];
-
-    fillSelects();
-    renderReferees();
-}
-
-
-/* SELECTS */
-
-function fillSelects(){
-
-    const ids = [
-        "ref1",
-        "ref2",
-        "line1",
-        "line2",
-        "secretary",
-        "announcer",
-        "penalty1",
-        "penalty2",
-        "goal1",
-        "goal2"
-    ];
-
-
-    ids.forEach(id => {
-
-        const select =
-            document.getElementById(id);
-
-        const oldValue =
-            select.value;
-
-        select.innerHTML =
-            `<option value="">
-                Не назначен
-            </option>`;
-
-
-        referees.forEach(ref => {
-
-            select.innerHTML += `
-                <option value="${ref.id}">
-                    ${escapeHtml(ref.name)}
-                </option>
-            `;
-
-        });
-
-
-        if(
-            [...select.options]
-                .some(option =>
-                    option.value === oldValue
-                )
-        ){
-
-            select.value = oldValue;
-
-        }
-
-    });
+    `).join("");
 
 }
 
 
-/* ADD REFEREE */
 
-async function addReferee(){
+async function loadRefs(){
 
-    const input =
-        document.getElementById("refereeName");
+  try{
 
-    const name =
-        input.value.trim();
+    referees =
+      await api(
+        "referees?select=id,name&order=name.asc"
+      );
 
-    const status =
+
+    document.getElementById("refList").innerHTML =
+
+      referees.length
+
+        ? referees.map(r => `
+
+          <div class="list-item">
+
+            <span>
+              ${esc(r.name)}
+            </span>
+
+            <button
+              class="small-btn"
+              onclick="deleteRef(${r.id})"
+            >
+              Удалить
+            </button>
+
+          </div>
+
+        `).join("")
+
+        :
+
+        '<div class="empty">Реестр пуст.</div>';
+
+
+    renderRefFields();
+
+
+  }catch(e){
+
+    document.getElementById("refStatus").className =
+      "status error";
+
+    document.getElementById("refStatus").textContent =
+      "Ошибка: " + e.message;
+
+  }
+
+}
+
+
+
+async function deleteRef(id){
+
+  if(
+    !confirm(
+      "Удалить судью из реестра?"
+    )
+  ) return;
+
+
+  try{
+
+    await api(
+      `referees?id=eq.${id}`,
+      {
+        method:"DELETE"
+      }
+    );
+
+
+    await loadRefs();
+
+
+  }catch(e){
+
+    alert(
+      "Ошибка: " + e.message
+    );
+
+  }
+
+}
+
+
+
+document
+  .getElementById("refForm")
+  .addEventListener(
+    "submit",
+    async e => {
+
+      e.preventDefault();
+
+
+      const status =
         document.getElementById("refStatus");
 
 
-    if(!name){
+      try{
 
-        status.innerHTML =
-            `<span class="error">
-                Введите ФИО.
-            </span>`;
+        await api(
+          "referees",
+          {
+            method:"POST",
 
-        return;
-    }
+            headers:{
+              "Prefer":"return=minimal"
+            },
 
+            body:JSON.stringify({
 
-    const { error } =
-        await supabase
-            .from("referees")
-            .insert({
-                name:name
-            });
+              name:
+                document
+                  .getElementById("refName")
+                  .value
+                  .trim()
 
+            })
 
-    if(error){
-
-        console.error(error);
-
-        status.innerHTML =
-            `<span class="error">
-                Ошибка: ${escapeHtml(error.message)}
-            </span>`;
-
-        return;
-    }
-
-
-    input.value = "";
-
-    status.innerHTML =
-        `<span class="success">
-            Судья добавлен.
-        </span>`;
-
-
-    await loadReferees();
-
-}
-
-
-/* DELETE REFEREE */
-
-async function deleteReferee(id){
-
-    if(!confirm("Удалить судью из реестра?")){
-        return;
-    }
-
-
-    const { error } =
-        await supabase
-            .from("referees")
-            .delete()
-            .eq("id",id);
-
-
-    if(error){
-
-        alert(
-            "Не удалось удалить судью: " +
-            error.message
+          }
         );
 
-        return;
+
+        document
+          .getElementById("refName")
+          .value = "";
+
+
+        status.className =
+          "status ok";
+
+        status.textContent =
+          "Судья добавлен.";
+
+
+        await loadRefs();
+
+
+      }catch(err){
+
+        status.className =
+          "status error";
+
+        status.textContent =
+          "Ошибка: " + err.message;
+
+      }
+
     }
+  );
 
 
-    await loadReferees();
 
-}
+document
+  .getElementById("matchForm")
+  .addEventListener(
+    "submit",
+    async e => {
 
-
-/* RENDER REFEREES */
-
-function renderReferees(){
-
-    const box =
-        document.getElementById("refereesList");
+      e.preventDefault();
 
 
-    if(!referees.length){
-
-        box.innerHTML =
-            "Реестр судей пуст.";
-
-        return;
-    }
-
-
-    box.innerHTML =
-        referees.map(ref => `
-
-            <div class="item">
-
-                <strong>
-                    ${escapeHtml(ref.name)}
-                </strong>
-
-                <div class="actions">
-
-                    <button
-                        class="delete"
-                        onclick="deleteReferee(${ref.id})"
-                    >
-                        УДАЛИТЬ
-                    </button>
-
-                </div>
-
-            </div>
-
-        `).join("");
-
-}
-
-
-/* SAVE MATCH */
-
-async function saveMatch(){
-
-    const status =
+      const status =
         document.getElementById("matchStatus");
 
 
-    const payload = {
+      const data = {
 
         team1:
-            document.getElementById("team1").value.trim(),
+          document
+            .getElementById("team1")
+            .value
+            .trim(),
 
         team2:
-            document.getElementById("team2").value.trim(),
+          document
+            .getElementById("team2")
+            .value
+            .trim(),
 
         match_date:
-            document.getElementById("date").value || null,
+          document
+            .getElementById("date")
+            .value ||
+          null,
 
         match_time:
-            document.getElementById("time").value || null,
+          document
+            .getElementById("time")
+            .value ||
+          null,
 
         place:
-            document.getElementById("place").value.trim() || null,
+          document
+            .getElementById("place")
+            .value
+            .trim() ||
+          null
 
-        ref1:
-            numberOrNull("ref1"),
-
-        ref2:
-            numberOrNull("ref2"),
-
-        line1:
-            numberOrNull("line1"),
-
-        line2:
-            numberOrNull("line2"),
-
-        secretary:
-            numberOrNull("secretary"),
-
-        announcer:
-            numberOrNull("announcer"),
-
-        penalty1:
-            numberOrNull("penalty1"),
-
-        penalty2:
-            numberOrNull("penalty2"),
-
-        goal1:
-            numberOrNull("goal1"),
-
-        goal2:
-            numberOrNull("goal2")
-    };
+      };
 
 
-    if(!payload.team1 || !payload.team2){
+      roleFields.forEach(
+        ([,key]) => {
 
-        status.innerHTML =
-            `<span class="error">
-                Укажите обе команды.
-            </span>`;
+          const v =
+            document
+              .getElementById(key)
+              ?.value;
 
-        return;
+          data[key] =
+            v
+              ? Number(v)
+              : null;
+
+        }
+      );
+
+
+      try{
+
+        await api(
+          "matches",
+          {
+            method:"POST",
+
+            headers:{
+              "Prefer":"return=minimal"
+            },
+
+            body:
+              JSON.stringify(data)
+
+          }
+        );
+
+
+        status.className =
+          "status ok";
+
+        status.textContent =
+          "Матч добавлен.";
+
+
+        e.target.reset();
+
+
+        await loadMatches();
+
+
+      }catch(err){
+
+        status.className =
+          "status error";
+
+        status.textContent =
+          "Ошибка: " + err.message;
+
+      }
+
     }
+  );
 
 
-    let result;
-
-
-    if(editingId){
-
-        result =
-            await supabase
-                .from("matches")
-                .update(payload)
-                .eq("id",editingId);
-
-    }else{
-
-        result =
-            await supabase
-                .from("matches")
-                .insert(payload);
-
-    }
-
-
-    if(result.error){
-
-        console.error(result.error);
-
-        status.innerHTML =
-            `<span class="error">
-                Ошибка: ${escapeHtml(result.error.message)}
-            </span>`;
-
-        return;
-    }
-
-
-    status.innerHTML =
-        `<span class="success">
-            Матч сохранён.
-        </span>`;
-
-
-    resetForm();
-
-    await loadMatches();
-
-}
-
-
-function numberOrNull(id){
-
-    const value =
-        document.getElementById(id).value;
-
-    return value ? Number(value) : null;
-}
-
-
-/* LOAD MATCHES */
 
 async function loadMatches(){
 
-    const { data,error } =
-        await supabase
-            .from("matches")
-            .select("*")
-            .order("match_date",{ascending:true})
-            .order("match_time",{ascending:true});
+  const box =
+    document.getElementById("matchList");
 
 
-    if(error){
+  try{
 
-        console.error(error);
-
-        document.getElementById("matchesList")
-            .innerHTML =
-            `<div class="error">
-                Ошибка загрузки матчей.
-            </div>`;
-
-        return;
-    }
-
-
-    matches = data || [];
-
-    renderMatches();
-
-}
-
-
-/* DATE */
-
-function formatDate(date){
-
-    if(!date) return "";
-
-    const months = [
-        "января","февраля","марта","апреля",
-        "мая","июня","июля","августа",
-        "сентября","октября","ноября","декабря"
-    ];
-
-    const d =
-        new Date(date + "T00:00:00");
-
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-
-/* RENDER MATCHES */
-
-function renderMatches(){
-
-    const box =
-        document.getElementById("matchesList");
-
-
-    if(!matches.length){
-
-        box.innerHTML =
-            "Матчей пока нет.";
-
-        return;
-    }
+    const matches =
+      await api(
+        "matches?select=*&order=match_date.asc,match_time.asc"
+      );
 
 
     box.innerHTML =
-        matches.map(match => `
 
-            <div class="item">
+      matches.length
 
-                <div>
+        ? matches.map(m => `
 
-                    <strong>
-                        ${escapeHtml(match.team1)}
-                        —
-                        ${escapeHtml(match.team2)}
-                    </strong>
+          <div class="list-item">
 
-                    <br><br>
+            <span>
 
-                    ${formatDate(match.match_date)}
+              <b>
+                ${esc(m.team1)}
+                —
+                ${esc(m.team2)}
+              </b>
 
-                    ${match.match_time
-                        ? " • " + escapeHtml(match.match_time)
-                        : ""}
+              <br>
 
-                    ${match.place
-                        ? " • " + escapeHtml(match.place)
-                        : ""}
+              ${formatDate(m.match_date)}
+              ·
+              ${esc(m.match_time || "")}
+              ·
+              ${esc(m.place || "")}
 
-                </div>
+            </span>
 
 
-                <div class="actions">
+            <div
+              style="display:flex;gap:7px"
+            >
 
-                    <button
-                        class="edit"
-                        onclick="editMatch(${match.id})"
-                    >
-                        ИЗМЕНИТЬ
-                    </button>
+              <a
+                class="small-btn"
+                href="match.html?id=${m.id}"
+              >
+                Открыть
+              </a>
 
-                    <button
-                        class="delete"
-                        onclick="deleteMatch(${match.id})"
-                    >
-                        УДАЛИТЬ
-                    </button>
 
-                </div>
+              <button
+                class="small-btn"
+                onclick="deleteMatch(${m.id})"
+              >
+                Удалить
+              </button>
 
             </div>
 
-        `).join("");
+          </div>
+
+        `).join("")
+
+        :
+
+        '<div class="empty">Матчей пока нет.</div>';
+
+
+  }catch(e){
+
+    box.innerHTML =
+      `<div class="status error">
+        Ошибка: ${esc(e.message)}
+      </div>`;
+
+  }
 
 }
 
 
-/* EDIT */
-
-function editMatch(id){
-
-    const match =
-        matches.find(m => m.id === id);
-
-    if(!match) return;
-
-
-    editingId = id;
-
-
-    document.getElementById("formTitle")
-        .textContent =
-        "РЕДАКТИРОВАТЬ МАТЧ";
-
-
-    document.getElementById("team1").value =
-        match.team1 || "";
-
-    document.getElementById("team2").value =
-        match.team2 || "";
-
-    document.getElementById("date").value =
-        match.match_date || "";
-
-    document.getElementById("time").value =
-        match.match_time || "";
-
-    document.getElementById("place").value =
-        match.place || "";
-
-
-    const fields = [
-        "ref1",
-        "ref2",
-        "line1",
-        "line2",
-        "secretary",
-        "announcer",
-        "penalty1",
-        "penalty2",
-        "goal1",
-        "goal2"
-    ];
-
-
-    fields.forEach(field => {
-
-        document.getElementById(field).value =
-            match[field] || "";
-
-    });
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-
-}
-
-
-/* DELETE */
 
 async function deleteMatch(id){
 
-    if(!confirm("Удалить матч?")){
-        return;
-    }
+  if(
+    !confirm("Удалить матч?")
+  ) return;
 
 
-    const { error } =
-        await supabase
-            .from("matches")
-            .delete()
-            .eq("id",id);
+  try{
 
-
-    if(error){
-
-        alert(
-            "Не удалось удалить матч: " +
-            error.message
-        );
-
-        return;
-    }
+    await api(
+      `matches?id=eq.${id}`,
+      {
+        method:"DELETE"
+      }
+    );
 
 
     await loadMatches();
 
-}
 
+  }catch(e){
 
-/* RESET */
+    alert(
+      "Ошибка: " + e.message
+    );
 
-function resetForm(){
-
-    editingId = null;
-
-    document.getElementById("formTitle")
-        .textContent =
-        "ДОБАВИТЬ МАТЧ";
-
-
-    [
-        "team1",
-        "team2",
-        "date",
-        "time",
-        "place"
-    ].forEach(id => {
-
-        document.getElementById(id).value = "";
-
-    });
-
-
-    [
-        "ref1",
-        "ref2",
-        "line1",
-        "line2",
-        "secretary",
-        "announcer",
-        "penalty1",
-        "penalty2",
-        "goal1",
-        "goal2"
-    ].forEach(id => {
-
-        document.getElementById(id).value = "";
-
-    });
+  }
 
 }
 
 
-/* START */
 
-async function start(){
+(async()=>{
 
-    await loadReferees();
-    await loadMatches();
+  await loadRefs();
 
-}
+  await loadMatches();
 
-start();
+})();
 
 </script>
 
