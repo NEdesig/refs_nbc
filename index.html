@@ -1,254 +1,146 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>REF HOCKEY</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-*{box-sizing:border-box}
-
-body{
-    margin:0;
-    background:#eeeeee;
-    color:#111;
-    font-family:'Unbounded',sans-serif;
-}
-
-header{
-    background:#111;
-    color:#fff;
-    padding:25px 30px;
-    font-size:23px;
-    font-weight:700;
-}
-
-.container{
-    max-width:1100px;
-    margin:35px auto;
-    padding:0 20px;
-}
-
-h1{
-    font-size:28px;
-    margin:0 0 25px;
-}
-
-.matches{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:18px;
-}
-
-.match{
-    background:#fff;
-    border-left:5px solid #ff6a00;
-    padding:25px;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.match:hover{
-    background:#111;
-    color:#fff;
-    transform:translateY(-2px);
-}
-
-.date{
-    font-size:11px;
-    color:#777;
-    margin-bottom:18px;
-}
-
-.match:hover .date{
-    color:#aaa;
-}
-
-.teams{
-    font-size:18px;
-    font-weight:700;
-    line-height:1.5;
-}
-
-.info{
-    margin-top:18px;
-    font-size:11px;
-    color:#777;
-}
-
-.match:hover .info{
-    color:#aaa;
-}
-
-.empty{
-    background:#fff;
-    padding:30px;
-    border-left:5px solid #ff6a00;
-}
-
-.error{
-    background:#fff;
-    padding:20px;
-    color:#b00000;
-    border-left:5px solid #b00000;
-}
-
-@media(max-width:700px){
-    .matches{
-        grid-template-columns:1fr;
-    }
-
-    h1{
-        font-size:22px;
-    }
-
-    .teams{
-        font-size:16px;
-    }
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-    REF HOCKEY
+<header class="top">
+
+  <div class="top-inner">
+
+    <a class="logo" href="index.html">
+      REF HOCKEY
+    </a>
+
+    <nav class="nav">
+
+      <a class="active" href="index.html">
+        Матчи
+      </a>
+
+      <a href="admin.html">
+        Админка
+      </a>
+
+    </nav>
+
+  </div>
+
 </header>
 
-<div class="container">
 
-    <h1>МАТЧИ</h1>
+<main class="wrap">
 
-    <div id="matches" class="matches">
-        <div class="empty">Загрузка матчей...</div>
+  <section class="hero">
+
+    <div>
+
+      <h1>
+        СУДЕЙСКИЕ БРИГАДЫ
+      </h1>
+
+      <p>
+        Матчи и составы судейских бригад.
+      </p>
+
     </div>
 
-</div>
+  </section>
+
+
+  <h2 class="section-title">
+    БЛИЖАЙШИЕ МАТЧИ
+  </h2>
+
+
+  <div id="status" class="status">
+    Загрузка...
+  </div>
+
+
+  <section id="matches" class="matches"></section>
+
+</main>
+
+
+<script src="config.js"></script>
 
 <script>
 
-const SUPABASE_URL =
-    "https://ckfwxtirevtzgrzwypio.supabase.co";
-
-const SUPABASE_KEY =
-    "sb_publishable_N55S09HuLN-2XlnYCjE61w_AKX12EuB";
-
-const supabase =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-
-function escapeHtml(text){
-    return String(text || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
-
-
-function formatDate(date){
-
-    if(!date) return "";
-
-    const months = [
-        "января","февраля","марта","апреля",
-        "мая","июня","июля","августа",
-        "сентября","октября","ноября","декабря"
-    ];
-
-    const d = new Date(date + "T00:00:00");
-
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-
 async function loadMatches(){
 
-    const box =
-        document.getElementById("matches");
+  const status =
+    document.getElementById("status");
 
-    const { data, error } =
-        await supabase
-            .from("matches")
-            .select("*")
-            .order("match_date",{ascending:true})
-            .order("match_time",{ascending:true});
+  const box =
+    document.getElementById("matches");
 
-    if(error){
+  try{
 
-        console.error(error);
+    const matches =
+      await api(
+        "matches?select=*&order=match_date.asc,match_time.asc"
+      );
 
-        box.innerHTML = `
-            <div class="error">
-                Не удалось загрузить матчи.
-            </div>
-        `;
+    status.textContent = "";
 
-        return;
+    if(!matches.length){
+
+      box.innerHTML =
+        '<div class="empty">Матчей пока нет.</div>';
+
+      return;
     }
 
+    box.innerHTML =
+      matches.map(m => `
 
-    if(!data || !data.length){
+        <article
+          class="match-card"
+          onclick="location.href='match.html?id=${m.id}'"
+        >
 
-        box.innerHTML = `
-            <div class="empty">
-                Матчей пока нет.
-            </div>
-        `;
+          <div class="match-date">
+            ${formatDate(m.match_date)}
+          </div>
 
-        return;
-    }
+          <div class="teams">
+            ${esc(m.team1)} — ${esc(m.team2)}
+          </div>
 
+          <div class="match-meta">
 
-    box.innerHTML = data.map(match => `
+            ${esc(m.match_time || "")}
 
-        <div class="match"
-             onclick="openMatch(${match.id})">
+            <br>
 
-            <div class="date">
-                ${formatDate(match.match_date)}
-            </div>
+            ${esc(m.place || "")}
 
-            <div class="teams">
-                ${escapeHtml(match.team1)}
-                —
-                ${escapeHtml(match.team2)}
-            </div>
+          </div>
 
-            <div class="info">
+        </article>
 
-                ${match.match_time
-                    ? escapeHtml(match.match_time)
-                    : ""}
+      `).join("");
 
-                ${match.place
-                    ? " • " + escapeHtml(match.place)
-                    : ""}
+  }catch(e){
 
-            </div>
+    status.className =
+      "status error";
 
-        </div>
+    status.textContent =
+      "Ошибка загрузки: " + e.message;
 
-    `).join("");
-}
-
-
-function openMatch(id){
-
-    window.location.href =
-        "match.html?id=" + encodeURIComponent(id);
+  }
 
 }
-
 
 loadMatches();
 
