@@ -1,273 +1,671 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Админка — Матчи</title>
+<title>Админ-панель</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f5f8;
-            color: #111;
-        }
+<style>
 
-        header {
-            background: #000056;
-            color: white;
-            padding: 22px 20px;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        header h1 {
-            max-width: 1100px;
-            margin: auto;
-            font-size: 26px;
-        }
+body {
+    font-family: "Unbounded", sans-serif;
+    background: #f5f5f5;
+    color: #202024;
+}
 
-        .container {
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
+/* HEADER */
 
-        .panel {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
+header {
+    background: #202024;
+    color: white;
+    padding: 22px 25px;
+}
 
-        .panel h2 {
-            margin-bottom: 22px;
-        }
+.header-inner {
+    max-width: 1200px;
+    margin: auto;
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
+.logo {
+    font-size: 18px;
+    font-weight: 700;
+}
 
-        .field.full {
-            grid-column: 1 / -1;
-        }
+.back {
+    color: white;
+    text-decoration: none;
+    font-size: 11px;
+    opacity: .65;
+}
 
-        label {
-            font-size: 14px;
-            font-weight: 700;
-        }
+/* CONTAINER */
 
-        input {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid #d5d5d5;
-            border-radius: 9px;
-            font-size: 16px;
-            outline: none;
-        }
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 45px 25px 80px;
+}
 
-        input:focus {
-            border-color: #000056;
-        }
+.page-title {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 30px;
+}
 
-        button {
-            border: none;
-            border-radius: 9px;
-            padding: 13px 20px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+/* TABS */
 
-        .save {
-            background: #000056;
-            color: white;
-            margin-top: 20px;
-        }
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    overflow-x: auto;
+}
 
-        .cancel {
-            background: #ddd;
-            color: #111;
-            margin-top: 20px;
-            margin-left: 8px;
-            display: none;
-        }
+.tab {
+    border: none;
+    background: #e7e7e9;
+    color: #555;
 
-        .match-admin {
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
+    padding: 14px 20px;
 
-        .match-info strong {
-            font-size: 18px;
-            display: block;
-            margin-bottom: 7px;
-        }
+    border-radius: 100px;
 
-        .match-info span {
-            color: #666;
-            font-size: 14px;
-        }
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
 
-        .actions {
-            display: flex;
-            gap: 8px;
-        }
+    cursor: pointer;
 
-        .edit {
-            background: #e8e8f5;
-            color: #000056;
-        }
+    white-space: nowrap;
+}
 
-        .delete {
-            background: #ffe4e4;
-            color: #b00000;
-        }
+.tab.active {
+    background: #ff5b22;
+    color: white;
+}
 
-        .empty {
-            color: #777;
-        }
+/* PANELS */
 
-        @media (max-width: 700px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+.panel {
+    background: white;
+    border-radius: 28px;
+    padding: 30px;
+}
 
-            .field.full {
-                grid-column: auto;
-            }
+.panel-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
 
-            .match-admin {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+/* FORM */
 
-            .actions {
-                width: 100%;
-            }
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
 
-            .actions button {
-                flex: 1;
-            }
-        }
-    </style>
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-size: 11px;
+    color: #777;
+    font-weight: 600;
+}
+
+input,
+select {
+    width: 100%;
+
+    border: none;
+    background: #f1f1f2;
+
+    border-radius: 13px;
+
+    padding: 15px;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    box-shadow: 0 0 0 2px #ff5b22;
+}
+
+/* BUTTONS */
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.primary {
+    border: none;
+
+    background: #ff5b22;
+    color: white;
+
+    border-radius: 100px;
+
+    padding: 15px 22px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    margin-top: 22px;
+}
+
+.secondary {
+    border: none;
+
+    background: #e9e9ea;
+    color: #222;
+
+    border-radius: 100px;
+
+    padding: 15px 22px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    margin-top: 22px;
+    margin-left: 7px;
+}
+
+/* MATCH LIST */
+
+.match-list {
+    margin-top: 25px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.match-item {
+    background: #f5f5f5;
+
+    border-radius: 18px;
+
+    padding: 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+}
+
+.match-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.match-details {
+    color: #777;
+    font-size: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 7px;
+}
+
+.edit {
+    border: none;
+    background: #e4e4e6;
+
+    padding: 11px 15px;
+
+    border-radius: 100px;
+
+    font-size: 10px;
+}
+
+.delete {
+    border: none;
+    background: #ffe4dc;
+    color: #d53e0c;
+
+    padding: 11px 15px;
+
+    border-radius: 100px;
+
+    font-size: 10px;
+}
+
+/* REFEREES */
+
+.referee-form {
+    display: flex;
+    gap: 10px;
+}
+
+.referee-form input {
+    flex: 1;
+}
+
+.referee-form button {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.referee-list {
+    margin-top: 25px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.referee-item {
+    background: #f5f5f5;
+
+    border-radius: 17px;
+
+    padding: 17px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.referee-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.empty {
+    color: #888;
+    font-size: 12px;
+    padding: 20px 0;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .container {
+        padding: 35px 16px 60px;
+    }
+
+    .page-title {
+        font-size: 32px;
+    }
+
+    .panel {
+        padding: 22px;
+        border-radius: 23px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field.full {
+        grid-column: auto;
+    }
+
+    .match-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .actions {
+        width: 100%;
+    }
+
+    .actions button {
+        flex: 1;
+    }
+
+    .referee-form {
+        flex-direction: column;
+    }
+
+    .referee-form button {
+        width: 100%;
+    }
+}
+
+</style>
 </head>
 
 <body>
 
 <header>
-    <h1>АДМИН-ПАНЕЛЬ</h1>
+
+    <div class="header-inner">
+
+        <div class="logo">
+            REF HOCKEY
+        </div>
+
+        <a href="index.html" class="back">
+            НА САЙТ →
+        </a>
+
+    </div>
+
 </header>
+
 
 <main class="container">
 
-    <section class="panel">
+    <h1 class="page-title">
+        АДМИНКА
+    </h1>
 
-        <h2 id="formTitle">Добавить матч</h2>
 
-        <div class="form-grid">
+    <!-- TABS -->
 
-            <div class="field">
-                <label>Команда 1</label>
-                <input id="team1" type="text" placeholder="Челны">
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            onclick="showTab('matches', this)">
+            МАТЧИ
+        </button>
+
+        <button
+            class="tab"
+            onclick="showTab('referees', this)">
+            РЕЕСТР СУДЕЙ
+        </button>
+
+    </div>
+
+
+    <!-- ===================== -->
+    <!-- MATCHES -->
+    <!-- ===================== -->
+
+    <section id="matchesTab">
+
+        <div class="panel">
+
+            <div class="panel-title" id="formTitle">
+                Добавить матч
             </div>
 
-            <div class="field">
-                <label>Команда 2</label>
-                <input id="team2" type="text" placeholder="Нефтяник">
+
+            <div class="form-grid">
+
+                <div class="field">
+
+                    <label>
+                        КОМАНДА 1
+                    </label>
+
+                    <input
+                        id="team1"
+                        type="text"
+                        placeholder="Челны">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        КОМАНДА 2
+                    </label>
+
+                    <input
+                        id="team2"
+                        type="text"
+                        placeholder="Нефтяник">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        ДАТА
+                    </label>
+
+                    <input
+                        id="date"
+                        type="date">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        ВРЕМЯ
+                    </label>
+
+                    <input
+                        id="time"
+                        type="time">
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        МЕСТО
+                    </label>
+
+                    <input
+                        id="place"
+                        type="text"
+                        placeholder="ЛД Основной">
+
+                </div>
+
+
+                <!-- REFEREES -->
+
+                <div class="field">
+
+                    <label>
+                        ГЛАВНЫЙ СУДЬЯ
+                    </label>
+
+                    <select id="mainReferee1">
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        ГЛАВНЫЙ СУДЬЯ
+                    </label>
+
+                    <select id="mainReferee2">
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        ЛИНЕЙНЫЙ СУДЬЯ
+                    </label>
+
+                    <select id="lineReferee1">
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        ЛИНЕЙНЫЙ СУДЬЯ
+                    </label>
+
+                    <select id="lineReferee2">
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        СЕКРЕТАРЬ МАТЧА
+                    </label>
+
+                    <select id="secretary">
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        ИНФОРМАТОР
+                    </label>
+
+                    <select id="announcer">
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        СУДЬИ ПРИ ОШТРАФОВАННЫХ
+                    </label>
+
+                    <select id="penaltyJudges">
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        СУДЬИ ЗА ВОРОТАМИ
+                    </label>
+
+                    <select id="goalJudges">
+                    </select>
+
+                </div>
+
             </div>
 
-            <div class="field">
-                <label>Дата</label>
-                <input id="date" type="date">
+
+            <button
+                class="primary"
+                onclick="saveMatch()">
+
+                СОХРАНИТЬ МАТЧ
+
+            </button>
+
+
+            <button
+                id="cancelButton"
+                class="secondary"
+                onclick="cancelEdit()"
+                style="display:none;">
+
+                ОТМЕНА
+
+            </button>
+
+        </div>
+
+
+        <div class="panel" style="margin-top:20px;">
+
+            <div class="panel-title">
+                Матчи
             </div>
 
-            <div class="field">
-                <label>Время</label>
-                <input id="time" type="time">
-            </div>
-
-            <div class="field full">
-                <label>Место</label>
-                <input id="place" type="text" placeholder="ЛД Основной">
-            </div>
-
-            <div class="field">
-                <label>Главный судья</label>
-                <input id="mainReferee1" type="text">
-            </div>
-
-            <div class="field">
-                <label>Главный судья</label>
-                <input id="mainReferee2" type="text">
-            </div>
-
-            <div class="field">
-                <label>Линейный судья</label>
-                <input id="lineReferee1" type="text">
-            </div>
-
-            <div class="field">
-                <label>Линейный судья</label>
-                <input id="lineReferee2" type="text">
-            </div>
-
-            <div class="field">
-                <label>Секретарь матча</label>
-                <input id="secretary" type="text">
-            </div>
-
-            <div class="field">
-                <label>Информатор</label>
-                <input id="announcer" type="text">
-            </div>
-
-            <div class="field">
-                <label>Судьи при оштрафованных</label>
-                <input id="penaltyJudges" type="text">
-            </div>
-
-            <div class="field">
-                <label>Судьи за воротами</label>
-                <input id="goalJudges" type="text">
+            <div id="matchesList"
+                 class="match-list">
             </div>
 
         </div>
 
-        <button class="save" onclick="saveMatch()">
-            Сохранить матч
-        </button>
-
-        <button id="cancelButton" class="cancel" onclick="cancelEdit()">
-            Отмена
-        </button>
-
     </section>
 
 
-    <section class="panel">
+    <!-- ===================== -->
+    <!-- REFEREES -->
+    <!-- ===================== -->
 
-        <h2>Матчи</h2>
+    <section
+        id="refereesTab"
+        style="display:none;">
 
-        <div id="matchesList"></div>
+        <div class="panel">
+
+            <div class="panel-title">
+                Реестр судей
+            </div>
+
+
+            <div class="referee-form">
+
+                <input
+                    id="refereeName"
+                    type="text"
+                    placeholder="Фамилия Имя Отчество">
+
+                <button
+                    class="primary"
+                    onclick="addReferee()">
+
+                    ДОБАВИТЬ
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="refereeList"
+                class="referee-list">
+            </div>
+
+        </div>
 
     </section>
 
@@ -276,303 +674,714 @@
 
 <script>
 
-    let editingId = null;
+/* =========================
+   STORAGE
+========================= */
+
+function getMatches() {
+
+    return JSON.parse(
+        localStorage.getItem("matches")
+    ) || [];
+
+}
 
 
-    function getMatches() {
-        return JSON.parse(localStorage.getItem("matches")) || [];
+function saveMatches(matches) {
+
+    localStorage.setItem(
+        "matches",
+        JSON.stringify(matches)
+    );
+
+}
+
+
+function getReferees() {
+
+    return JSON.parse(
+        localStorage.getItem("referees")
+    ) || [];
+
+}
+
+
+function saveReferees(referees) {
+
+    localStorage.setItem(
+        "referees",
+        JSON.stringify(referees)
+    );
+
+}
+
+
+/* =========================
+   TABS
+========================= */
+
+function showTab(tab, button) {
+
+    const matches =
+        document.getElementById("matchesTab");
+
+    const referees =
+        document.getElementById("refereesTab");
+
+
+    const buttons =
+        document.querySelectorAll(".tab");
+
+
+    buttons.forEach(item => {
+
+        item.classList.remove("active");
+
+    });
+
+
+    button.classList.add("active");
+
+
+    if (tab === "matches") {
+
+        matches.style.display = "block";
+        referees.style.display = "none";
+
+    } else {
+
+        matches.style.display = "none";
+        referees.style.display = "block";
+
+        showReferees();
+
+    }
+
+}
+
+
+/* =========================
+   REFEREE REGISTRY
+========================= */
+
+function addReferee() {
+
+    const input =
+        document.getElementById("refereeName");
+
+    const name =
+        input.value.trim();
+
+
+    if (!name) {
+
+        alert("Введите ФИО судьи.");
+
+        return;
+
     }
 
 
-    function saveMatches(matches) {
-        localStorage.setItem("matches", JSON.stringify(matches));
+    const referees =
+        getReferees();
+
+
+    referees.push({
+
+        id: Date.now(),
+
+        name: name
+
+    });
+
+
+    saveReferees(referees);
+
+
+    input.value = "";
+
+
+    showReferees();
+
+    updateRefereeSelects();
+
+}
+
+
+function deleteReferee(id) {
+
+    if (!confirm("Удалить судью из реестра?")) {
+
+        return;
+
     }
 
 
-    function value(id) {
-        return document.getElementById(id).value.trim();
-    }
+    let referees =
+        getReferees();
 
 
-    function saveMatch() {
-
-        const team1 = value("team1");
-        const team2 = value("team2");
-        const date = value("date");
-        const time = value("time");
-        const place = value("place");
-
-        if (!team1 || !team2 || !date || !time || !place) {
-            alert("Заполни команды, дату, время и место.");
-            return;
-        }
-
-
-        const match = {
-
-            id: editingId || Date.now(),
-
-            team1,
-            team2,
-            date,
-            time,
-            place,
-
-            mainReferee1: value("mainReferee1"),
-            mainReferee2: value("mainReferee2"),
-
-            lineReferee1: value("lineReferee1"),
-            lineReferee2: value("lineReferee2"),
-
-            secretary: value("secretary"),
-            announcer: value("announcer"),
-
-            penaltyJudges: value("penaltyJudges"),
-            goalJudges: value("goalJudges")
-        };
-
-
-        let matches = getMatches();
-
-
-        if (editingId) {
-
-            matches = matches.map(item =>
-                item.id === editingId ? match : item
-            );
-
-        } else {
-
-            matches.push(match);
-
-        }
-
-
-        saveMatches(matches);
-
-        alert(
-            editingId
-                ? "Матч изменён."
-                : "Матч добавлен."
+    referees =
+        referees.filter(
+            referee => referee.id !== id
         );
 
 
-        clearForm();
-        showMatches();
-    }
+    saveReferees(referees);
 
 
-    function editMatch(id) {
+    showReferees();
 
-        const match = getMatches().find(item => item.id === id);
+    updateRefereeSelects();
 
-        if (!match) return;
-
-
-        editingId = id;
+}
 
 
-        document.getElementById("formTitle").textContent =
-            "Редактировать матч";
+function showReferees() {
+
+    const container =
+        document.getElementById("refereeList");
+
+    const referees =
+        getReferees();
 
 
-        document.getElementById("team1").value =
-            match.team1 || "";
-
-        document.getElementById("team2").value =
-            match.team2 || "";
-
-        document.getElementById("date").value =
-            match.date || "";
-
-        document.getElementById("time").value =
-            match.time || "";
-
-        document.getElementById("place").value =
-            match.place || "";
+    container.innerHTML = "";
 
 
-        document.getElementById("mainReferee1").value =
-            match.mainReferee1 || "";
+    if (referees.length === 0) {
 
-        document.getElementById("mainReferee2").value =
-            match.mainReferee2 || "";
+        container.innerHTML = `
+            <div class="empty">
+                В реестре пока нет судей.
+            </div>
+        `;
 
-        document.getElementById("lineReferee1").value =
-            match.lineReferee1 || "";
-
-        document.getElementById("lineReferee2").value =
-            match.lineReferee2 || "";
-
-        document.getElementById("secretary").value =
-            match.secretary || "";
-
-        document.getElementById("announcer").value =
-            match.announcer || "";
-
-        document.getElementById("penaltyJudges").value =
-            match.penaltyJudges || "";
-
-        document.getElementById("goalJudges").value =
-            match.goalJudges || "";
-
-
-        document.getElementById("cancelButton").style.display =
-            "inline-block";
-
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-
-    function deleteMatch(id) {
-
-        if (!confirm("Удалить этот матч?")) {
-            return;
-        }
-
-
-        let matches = getMatches();
-
-        matches = matches.filter(item => item.id !== id);
-
-        saveMatches(matches);
-
-        showMatches();
-    }
-
-
-    function cancelEdit() {
-
-        clearForm();
+        return;
 
     }
 
 
-    function clearForm() {
+    referees.forEach(referee => {
 
-        editingId = null;
-
-        document.getElementById("formTitle").textContent =
-            "Добавить матч";
-
-
-        document.querySelectorAll("input").forEach(input => {
-            input.value = "";
-        });
-
-
-        document.getElementById("cancelButton").style.display =
-            "none";
-    }
-
-
-    function formatDate(date) {
-
-        const parts = date.split("-");
-
-        if (parts.length !== 3) {
-            return date;
-        }
-
-        return `${parts[2]}.${parts[1]}.${parts[0]}`;
-    }
-
-
-    function showMatches() {
-
-        const container =
-            document.getElementById("matchesList");
-
-        const matches = getMatches();
-
-
-        if (matches.length === 0) {
-
-            container.innerHTML = `
-                <div class="empty">
-                    Матчей пока нет.
-                </div>
-            `;
-
-            return;
-        }
-
-
-        container.innerHTML = "";
-
-
-        matches.forEach(match => {
-
-            const item =
-                document.createElement("div");
-
-            item.className = "match-admin";
-
-
-            item.innerHTML = `
-
-                <div class="match-info">
-
-                    <strong>
-                        ${escapeHtml(match.team1)}
-                        —
-                        ${escapeHtml(match.team2)}
-                    </strong>
-
-                    <span>
-                        ${formatDate(match.date)}
-                        ·
-                        ${escapeHtml(match.time)}
-                        ·
-                        ${escapeHtml(match.place)}
-                    </span>
-
-                </div>
-
-
-                <div class="actions">
-
-                    <button
-                        class="edit"
-                        onclick="editMatch(${match.id})">
-                        Изменить
-                    </button>
-
-                    <button
-                        class="delete"
-                        onclick="deleteMatch(${match.id})">
-                        Удалить
-                    </button>
-
-                </div>
-            `;
-
-
-            container.appendChild(item);
-
-        });
-
-    }
-
-
-    function escapeHtml(text) {
-
-        const div =
+        const item =
             document.createElement("div");
 
-        div.textContent =
-            text || "";
+        item.className =
+            "referee-item";
 
-        return div.innerHTML;
+
+        item.innerHTML = `
+
+            <div class="referee-name">
+                ${escapeHtml(referee.name)}
+            </div>
+
+            <button
+                class="delete"
+                onclick="deleteReferee(${referee.id})">
+
+                УДАЛИТЬ
+
+            </button>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================
+   SELECTS
+========================= */
+
+function updateRefereeSelects() {
+
+    const referees =
+        getReferees();
+
+
+    const ids = [
+
+        "mainReferee1",
+        "mainReferee2",
+
+        "lineReferee1",
+        "lineReferee2",
+
+        "secretary",
+        "announcer",
+
+        "penaltyJudges",
+        "goalJudges"
+
+    ];
+
+
+    ids.forEach(id => {
+
+        const select =
+            document.getElementById(id);
+
+
+        const oldValue =
+            select.value;
+
+
+        select.innerHTML = `
+
+            <option value="">
+                Не назначен
+            </option>
+
+        `;
+
+
+        referees.forEach(referee => {
+
+            const option =
+                document.createElement("option");
+
+
+            option.value =
+                referee.name;
+
+
+            option.textContent =
+                referee.name;
+
+
+            select.appendChild(option);
+
+        });
+
+
+        if (
+            referees.some(
+                referee =>
+                    referee.name === oldValue
+            )
+        ) {
+
+            select.value = oldValue;
+
+        }
+
+    });
+
+}
+
+
+/* =========================
+   MATCHES
+========================= */
+
+let editingId = null;
+
+
+function value(id) {
+
+    return document
+        .getElementById(id)
+        .value;
+
+}
+
+
+function saveMatch() {
+
+    const team1 =
+        value("team1").trim();
+
+    const team2 =
+        value("team2").trim();
+
+    const date =
+        value("date");
+
+    const time =
+        value("time");
+
+    const place =
+        value("place").trim();
+
+
+    if (
+        !team1 ||
+        !team2 ||
+        !date ||
+        !time ||
+        !place
+    ) {
+
+        alert(
+            "Заполни команды, дату, время и место."
+        );
+
+        return;
 
     }
+
+
+    const match = {
+
+        id: editingId || Date.now(),
+
+        team1,
+        team2,
+        date,
+        time,
+        place,
+
+        mainReferee1: value("mainReferee1"),
+        mainReferee2: value("mainReferee2"),
+
+        lineReferee1: value("lineReferee1"),
+        lineReferee2: value("lineReferee2"),
+
+        secretary: value("secretary"),
+        announcer: value("announcer"),
+
+        penaltyJudges: value("penaltyJudges"),
+        goalJudges: value("goalJudges")
+
+    };
+
+
+    let matches =
+        getMatches();
+
+
+    if (editingId) {
+
+        matches =
+            matches.map(item =>
+                item.id === editingId
+                    ? match
+                    : item
+            );
+
+    } else {
+
+        matches.push(match);
+
+    }
+
+
+    saveMatches(matches);
+
+
+    clearForm();
+
+    showMatches();
+
+
+    alert(
+        editingId
+            ? "Матч изменён."
+            : "Матч добавлен."
+    );
+
+}
+
+
+function editMatch(id) {
+
+    const match =
+        getMatches().find(
+            item => item.id === id
+        );
+
+
+    if (!match) return;
+
+
+    editingId = id;
+
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Редактировать матч";
+
+
+    document.getElementById("team1").value =
+        match.team1 || "";
+
+    document.getElementById("team2").value =
+        match.team2 || "";
+
+    document.getElementById("date").value =
+        match.date || "";
+
+    document.getElementById("time").value =
+        match.time || "";
+
+    document.getElementById("place").value =
+        match.place || "";
+
+
+    updateRefereeSelects();
+
+
+    document.getElementById("mainReferee1").value =
+        match.mainReferee1 || "";
+
+    document.getElementById("mainReferee2").value =
+        match.mainReferee2 || "";
+
+    document.getElementById("lineReferee1").value =
+        match.lineReferee1 || "";
+
+    document.getElementById("lineReferee2").value =
+        match.lineReferee2 || "";
+
+    document.getElementById("secretary").value =
+        match.secretary || "";
+
+    document.getElementById("announcer").value =
+        match.announcer || "";
+
+    document.getElementById("penaltyJudges").value =
+        match.penaltyJudges || "";
+
+    document.getElementById("goalJudges").value =
+        match.goalJudges || "";
+
+
+    document.getElementById(
+        "cancelButton"
+    ).style.display =
+        "inline-block";
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+function deleteMatch(id) {
+
+    if (!confirm("Удалить этот матч?")) {
+
+        return;
+
+    }
+
+
+    let matches =
+        getMatches();
+
+
+    matches =
+        matches.filter(
+            item => item.id !== id
+        );
+
+
+    saveMatches(matches);
 
 
     showMatches();
+
+}
+
+
+function cancelEdit() {
+
+    clearForm();
+
+}
+
+
+function clearForm() {
+
+    editingId = null;
+
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Добавить матч";
+
+
+    document
+        .querySelectorAll(
+            "#matchesTab input"
+        )
+        .forEach(input => {
+
+            input.value = "";
+
+        });
+
+
+    document
+        .querySelectorAll(
+            "#matchesTab select"
+        )
+        .forEach(select => {
+
+            select.value = "";
+
+        });
+
+
+    document.getElementById(
+        "cancelButton"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =========================
+   MATCH LIST
+========================= */
+
+function formatDate(date) {
+
+    const parts =
+        date.split("-");
+
+
+    if (parts.length !== 3) {
+
+        return date;
+
+    }
+
+
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+
+}
+
+
+function showMatches() {
+
+    const container =
+        document.getElementById(
+            "matchesList"
+        );
+
+
+    const matches =
+        getMatches();
+
+
+    container.innerHTML = "";
+
+
+    if (matches.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Матчей пока нет.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    matches.forEach(match => {
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "match-item";
+
+
+        item.innerHTML = `
+
+            <div>
+
+                <div class="match-name">
+
+                    ${escapeHtml(match.team1)}
+                    —
+                    ${escapeHtml(match.team2)}
+
+                </div>
+
+                <div class="match-details">
+
+                    ${formatDate(match.date)}
+                    ·
+                    ${escapeHtml(match.time)}
+                    ·
+                    ${escapeHtml(match.place)}
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="edit"
+                    onclick="editMatch(${match.id})">
+
+                    ИЗМЕНИТЬ
+
+                </button>
+
+
+                <button
+                    class="delete"
+                    onclick="deleteMatch(${match.id})">
+
+                    УДАЛИТЬ
+
+                </button>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================
+   SECURITY
+========================= */
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+updateRefereeSelects();
+
+showMatches();
 
 </script>
 
