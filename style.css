@@ -198,39 +198,39 @@ a{
 .match-head{
   background:var(--black);
   color:#fff;
-  border-radius:28px;
-  padding:36px;
-  margin-bottom:24px;
+  border-radius:16px;
+  padding:24px;
+  margin-bottom:16px;
 }
 
 .match-head .date{
   color:#aaa;
-  font-size:12px;
-  margin-bottom:22px;
+  font-size:10px;
+  margin-bottom:19px;
 }
 
 .match-head h1{
   margin:0;
-  font-size:clamp(25px,5vw,48px);
+  font-size:clamp(21px,5vw,48px);
   line-height:1.15;
 }
 
 .match-head .meta{
-  margin-top:22px;
+  margin-top:18px;
   color:#ccc;
-  font-size:12px;
+  font-size:10px;
   line-height:2;
 }
 
 .brigade{
   background:#fff;
-  border-radius:28px;
-  padding:28px;
+  border-radius:14px;
+  padding:14px;
 }
 
 .brigade h2{
-  margin:0 0 22px;
-  font-size:22px;
+  margin:0 0 14px;
+  font-size:14px;
 }
 
 .ref-row{
