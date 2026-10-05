@@ -2,386 +2,255 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Матчи</title>
+<title>REF HOCKEY</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+*{box-sizing:border-box}
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+body{
+    margin:0;
+    background:#eeeeee;
+    color:#111;
+    font-family:'Unbounded',sans-serif;
 }
 
-body {
-    font-family: "Unbounded", sans-serif;
-    background: #f3f3f3;
-    color: #1d1d1f;
+header{
+    background:#111;
+    color:#fff;
+    padding:25px 30px;
+    font-size:23px;
+    font-weight:700;
 }
 
-/* HEADER */
-
-header {
-    background: #171719;
-    color: white;
-    padding: 25px;
+.container{
+    max-width:1100px;
+    margin:35px auto;
+    padding:0 20px;
 }
 
-.header-inner {
-    max-width: 1150px;
-    margin: auto;
+h1{
+    font-size:28px;
+    margin:0 0 25px;
 }
 
-.logo {
-    font-size: 19px;
-    font-weight: 800;
-    letter-spacing: -1px;
+.matches{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
 }
 
-/* MAIN */
-
-.container {
-    max-width: 1150px;
-    margin: auto;
-    padding: 55px 25px 80px;
+.match{
+    background:#fff;
+    border-left:5px solid #ff6a00;
+    padding:25px;
+    cursor:pointer;
+    transition:.2s;
 }
 
-.page-title {
-    font-size: 48px;
-    line-height: 1.1;
-    font-weight: 800;
-    letter-spacing: -2px;
-    margin-bottom: 35px;
+.match:hover{
+    background:#111;
+    color:#fff;
+    transform:translateY(-2px);
 }
 
-/* MATCHES */
-
-.matches {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.date{
+    font-size:11px;
+    color:#777;
+    margin-bottom:18px;
 }
 
-.match {
-    background: #fff;
-    border-radius: 25px;
-    padding: 30px;
-
-    cursor: pointer;
-
-    border: 1px solid #e5e5e5;
-
-    transition: .2s ease;
+.match:hover .date{
+    color:#aaa;
 }
 
-.match:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(0,0,0,.09);
+.teams{
+    font-size:18px;
+    font-weight:700;
+    line-height:1.5;
 }
 
-.match-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    margin-bottom: 28px;
+.info{
+    margin-top:18px;
+    font-size:11px;
+    color:#777;
 }
 
-.match-date {
-    font-size: 12px;
-    font-weight: 500;
-    color: #777;
+.match:hover .info{
+    color:#aaa;
 }
 
-.arrow {
-    width: 44px;
-    height: 44px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #eeeeef;
-
-    font-size: 20px;
-
-    transition: .2s;
+.empty{
+    background:#fff;
+    padding:30px;
+    border-left:5px solid #ff6a00;
 }
 
-.match:hover .arrow {
-    background: #ff5a1f;
-    color: white;
+.error{
+    background:#fff;
+    padding:20px;
+    color:#b00000;
+    border-left:5px solid #b00000;
 }
 
-.teams {
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1.4;
-
-    letter-spacing: -1px;
-
-    margin-bottom: 28px;
-}
-
-.match-bottom {
-    display: flex;
-    gap: 25px;
-
-    font-size: 12px;
-    color: #777;
-}
-
-.time {
-    color: #171719;
-    font-weight: 700;
-}
-
-.empty {
-    background: white;
-    border-radius: 25px;
-
-    padding: 60px 25px;
-
-    text-align: center;
-
-    color: #888;
-
-    font-size: 13px;
-}
-
-/* MOBILE */
-
-@media(max-width:700px) {
-
-    header {
-        padding: 21px;
+@media(max-width:700px){
+    .matches{
+        grid-template-columns:1fr;
     }
 
-    .logo {
-        font-size: 16px;
+    h1{
+        font-size:22px;
     }
 
-    .container {
-        padding: 38px 16px 60px;
-    }
-
-    .page-title {
-        font-size: 34px;
-        margin-bottom: 25px;
-    }
-
-    .match {
-        padding: 23px;
-        border-radius: 22px;
-    }
-
-    .teams {
-        font-size: 20px;
-        line-height: 1.5;
-    }
-
-    .match-bottom {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .arrow {
-        width: 38px;
-        height: 38px;
+    .teams{
+        font-size:16px;
     }
 }
-
 </style>
 </head>
 
 <body>
 
 <header>
-
-    <div class="header-inner">
-
-        <div class="logo">
-            REF HOCKEY
-        </div>
-
-    </div>
-
+    REF HOCKEY
 </header>
 
+<div class="container">
 
-<main class="container">
+    <h1>МАТЧИ</h1>
 
-    <h1 class="page-title">
-        МАТЧИ
-    </h1>
-
-    <div
-        id="matches"
-        class="matches">
+    <div id="matches" class="matches">
+        <div class="empty">Загрузка матчей...</div>
     </div>
 
-</main>
-
+</div>
 
 <script>
 
-function getMatches() {
+const SUPABASE_URL =
+    "https://ckfwxtirevtzgrzwypio.supabase.co";
 
-    return JSON.parse(
-        localStorage.getItem("matches")
-    ) || [];
+const SUPABASE_KEY =
+    "sb_publishable_N55S09HuLN-2XlnYCjE61w_AKX12EuB";
 
+const supabase =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+function escapeHtml(text){
+    return String(text || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 }
 
 
-function getMonth(month) {
+function formatDate(date){
 
-    const months = {
-        "01":"января",
-        "02":"февраля",
-        "03":"марта",
-        "04":"апреля",
-        "05":"мая",
-        "06":"июня",
-        "07":"июля",
-        "08":"августа",
-        "09":"сентября",
-        "10":"октября",
-        "11":"ноября",
-        "12":"декабря"
-    };
+    if(!date) return "";
 
-    return months[month] || month;
+    const months = [
+        "января","февраля","марта","апреля",
+        "мая","июня","июля","августа",
+        "сентября","октября","ноября","декабря"
+    ];
 
+    const d = new Date(date + "T00:00:00");
+
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 
-function formatDate(date) {
+async function loadMatches(){
 
-    const parts = date.split("-");
-
-    if (parts.length !== 3) {
-        return date;
-    }
-
-    return `${parts[2]} ${getMonth(parts[1])} ${parts[0]}`;
-
-}
-
-
-function escapeHtml(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        text || "";
-
-    return div.innerHTML;
-
-}
-
-
-function showMatches() {
-
-    const container =
+    const box =
         document.getElementById("matches");
 
-    const matches =
-        getMatches();
+    const { data, error } =
+        await supabase
+            .from("matches")
+            .select("*")
+            .order("match_date",{ascending:true})
+            .order("match_time",{ascending:true});
 
+    if(error){
 
-    container.innerHTML = "";
+        console.error(error);
 
-
-    if (matches.length === 0) {
-
-        container.innerHTML = `
-            <div class="empty">
-                ПОКА НЕТ МАТЧЕЙ
+        box.innerHTML = `
+            <div class="error">
+                Не удалось загрузить матчи.
             </div>
         `;
 
         return;
-
     }
 
 
-    matches.forEach(match => {
+    if(!data || !data.length){
 
-        const card =
-            document.createElement("div");
+        box.innerHTML = `
+            <div class="empty">
+                Матчей пока нет.
+            </div>
+        `;
 
-        card.className = "match";
+        return;
+    }
 
 
-        card.innerHTML = `
+    box.innerHTML = data.map(match => `
 
-            <div class="match-top">
+        <div class="match"
+             onclick="openMatch(${match.id})">
 
-                <div class="match-date">
-                    ${formatDate(match.date)}
-                </div>
-
-                <div class="arrow">
-                    →
-                </div>
-
+            <div class="date">
+                ${formatDate(match.match_date)}
             </div>
 
-
             <div class="teams">
-
                 ${escapeHtml(match.team1)}
                 —
                 ${escapeHtml(match.team2)}
+            </div>
+
+            <div class="info">
+
+                ${match.match_time
+                    ? escapeHtml(match.match_time)
+                    : ""}
+
+                ${match.place
+                    ? " • " + escapeHtml(match.place)
+                    : ""}
 
             </div>
 
+        </div>
 
-            <div class="match-bottom">
-
-                <span class="time">
-                    ${escapeHtml(match.time)}
-                </span>
-
-                <span>
-                    ${escapeHtml(match.place)}
-                </span>
-
-            </div>
-
-        `;
+    `).join("");
+}
 
 
-        card.onclick = () => {
+function openMatch(id){
 
-            localStorage.setItem(
-                "selectedMatch",
-                match.id
-            );
-
-            window.location.href =
-                "match.html";
-
-        };
-
-
-        container.appendChild(card);
-
-    });
+    window.location.href =
+        "match.html?id=" + encodeURIComponent(id);
 
 }
 
 
-showMatches();
+loadMatches();
 
 </script>
 
