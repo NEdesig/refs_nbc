@@ -1,377 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
 
 <title>Матч — REF HOCKEY</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    background:#eeeeee;
-    color:#111;
-    font-family:'Unbounded',sans-serif;
-}
-
-header{
-    background:#111;
-    color:#fff;
-    padding:22px 30px;
-    font-size:22px;
-    font-weight:700;
-}
-
-.back{
-    display:inline-block;
-    color:#fff;
-    text-decoration:none;
-    margin-top:10px;
-    font-size:11px;
-    opacity:.7;
-}
-
-.container{
-    max-width:1000px;
-    margin:35px auto;
-    padding:0 20px;
-}
-
-.match-card{
-    background:#111;
-    color:#fff;
-    padding:40px 25px;
-    text-align:center;
-    border-bottom:6px solid #ff6a00;
-}
-
-.date{
-    color:#aaa;
-    font-size:11px;
-    margin-bottom:20px;
-}
-
-.teams{
-    font-size:28px;
-    font-weight:700;
-}
-
-.info{
-    color:#aaa;
-    font-size:11px;
-    margin-top:20px;
-}
-
-.ref-card{
-    margin-top:25px;
-    background:#fff;
-    padding:30px;
-}
-
-.ref-card h2{
-    margin:0 0 20px;
-    font-size:19px;
-}
-
-.role{
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    padding:17px 0;
-    border-bottom:1px solid #ddd;
-}
-
-.role-name{
-    color:#777;
-    font-size:10px;
-}
-
-.role-person{
-    font-size:12px;
-    font-weight:600;
-    text-align:right;
-}
-
-.error{
-    background:#fff;
-    padding:30px;
-    border-left:5px solid #b00000;
-    color:#b00000;
-}
-
-@media(max-width:700px){
-
-    .teams{
-        font-size:20px;
-    }
-
-    .role{
-        flex-direction:column;
-        gap:7px;
-    }
-
-    .role-person{
-        text-align:left;
-    }
-
-}
-
-</style>
 </head>
+
 
 <body>
 
-<header>
+<header class="top">
 
-    REF HOCKEY
+  <div class="top-inner">
 
-    <br>
-
-    <a class="back" href="index.html">
-        ← ВСЕ МАТЧИ
+    <a class="logo" href="index.html">
+      REF HOCKEY
     </a>
+
+    <nav class="nav">
+
+      <a href="index.html">
+        Матчи
+      </a>
+
+      <a href="admin.html">
+        Админка
+      </a>
+
+    </nav>
+
+  </div>
 
 </header>
 
 
-<div class="container">
+<main class="wrap">
 
-    <div id="content">
-        Загрузка...
-    </div>
+  <a class="back" href="index.html">
+    ← ВСЕ МАТЧИ
+  </a>
 
-</div>
+  <div id="content"></div>
+
+</main>
+
+
+<script src="config.js"></script>
 
 
 <script>
 
-const SUPABASE_URL =
-    "https://ckfwxtirevtzgrzwypio.supabase.co";
+const roles = [
 
-const SUPABASE_KEY =
-    "sb_publishable_N55S09HuLN-2XlnYCjE61w_AKX12EuB";
+  ["Главный судья","ref1"],
 
-const supabase =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+  ["Главный судья","ref2"],
 
+  ["Линейный судья","line1"],
 
-const params =
-    new URLSearchParams(window.location.search);
+  ["Линейный судья","line2"],
 
-const matchId =
-    params.get("id");
+  ["Секретарь матча","secretary"],
 
+  ["Информатор","announcer"],
 
-function escapeHtml(text){
+  ["Судья при оштрафованных","penalty1"],
 
-    return String(text || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
+  ["Судья при оштрафованных","penalty2"],
+
+  ["Судья за воротами","goal1"],
+
+  ["Судья за воротами","goal2"]
+
+];
 
 
-function formatDate(date){
+async function load(){
 
-    if(!date) return "";
+  const id =
+    new URLSearchParams(location.search).get("id");
 
-    const months = [
-        "января","февраля","марта","апреля",
-        "мая","июня","июля","августа",
-        "сентября","октября","ноября","декабря"
-    ];
-
-    const d =
-        new Date(date + "T00:00:00");
-
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-}
+  const box =
+    document.getElementById("content");
 
 
-async function loadMatch(){
+  if(!id){
 
-    const content =
-        document.getElementById("content");
+    box.innerHTML =
+      '<div class="empty">Матч не найден.</div>';
 
+    return;
 
-    if(!matchId){
-
-        content.innerHTML = `
-            <div class="error">
-                Матч не найден.
-            </div>
-        `;
-
-        return;
-    }
+  }
 
 
-    const { data: match, error } =
-        await supabase
-            .from("matches")
-            .select("*")
-            .eq("id",matchId)
-            .single();
+  try{
+
+    const matches =
+      await api(
+        `matches?id=eq.${encodeURIComponent(id)}&select=*`
+      );
 
 
-    if(error || !match){
+    if(!matches.length){
 
-        console.error(error);
+      box.innerHTML =
+        '<div class="empty">Матч не найден.</div>';
 
-        content.innerHTML = `
-            <div class="error">
-                Матч не найден.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    const refereeIds = [
-        match.ref1,
-        match.ref2,
-        match.line1,
-        match.line2,
-        match.secretary,
-        match.announcer,
-        match.penalty1,
-        match.penalty2,
-        match.goal1,
-        match.goal2
-    ].filter(Boolean);
-
-
-    let refereeMap = {};
-
-
-    if(refereeIds.length){
-
-        const { data: refs } =
-            await supabase
-                .from("referees")
-                .select("id,name")
-                .in("id",refereeIds);
-
-
-        if(refs){
-
-            refs.forEach(ref => {
-                refereeMap[ref.id] = ref.name;
-            });
-
-        }
+      return;
 
     }
 
 
-    function role(name,id){
+    const m = matches[0];
 
-        if(!id || !refereeMap[id]){
-            return "";
-        }
 
-        return `
+    const ids =
+      roles
+        .map(r => m[r[1]])
+        .filter(Boolean);
+
+
+    let refs = [];
+
+
+    if(ids.length){
+
+      refs =
+        await api(
+          `referees?id=in.(${ids.join(",")})&select=id,name`
+        );
+
+    }
+
+
+    const names = {};
+
+
+    refs.forEach(r => {
+
+      names[r.id] = r.name;
+
+    });
+
+
+    const rows =
+
+      roles
+
+        .filter(r =>
+          m[r[1]] &&
+          names[m[r[1]]]
+        )
+
+        .map(r => `
+
+          <div class="ref-row">
+
             <div class="role">
-
-                <div class="role-name">
-                    ${name}
-                </div>
-
-                <div class="role-person">
-                    ${escapeHtml(refereeMap[id])}
-                </div>
-
-            </div>
-        `;
-    }
-
-
-    content.innerHTML = `
-
-        <div class="match-card">
-
-            <div class="date">
-                ${formatDate(match.match_date)}
+              ${r[0]}
             </div>
 
-            <div class="teams">
-                ${escapeHtml(match.team1)}
-                —
-                ${escapeHtml(match.team2)}
+            <div class="person">
+              ${esc(names[m[r[1]]])}
             </div>
 
-            <div class="info">
+          </div>
 
-                ${match.match_time
-                    ? escapeHtml(match.match_time)
-                    : ""}
+        `)
 
-                ${match.place
-                    ? " • " + escapeHtml(match.place)
-                    : ""}
+        .join("");
 
-            </div>
+
+    box.innerHTML = `
+
+      <section class="match-head">
+
+        <div class="date">
+          ${formatDate(m.match_date)}
+        </div>
+
+        <h1>
+          ${esc(m.team1)}
+          —
+          ${esc(m.team2)}
+        </h1>
+
+        <div class="meta">
+
+          ${esc(m.match_time || "")}
+
+          ${
+            m.place
+              ? "<br>" + esc(m.place)
+              : ""
+          }
 
         </div>
 
+      </section>
 
-        <div class="ref-card">
 
-            <h2>СУДЕЙСКАЯ БРИГАДА</h2>
+      <section class="brigade">
 
-            ${role("Главный судья",match.ref1)}
-            ${role("Главный судья",match.ref2)}
+        <h2>
+          СУДЕЙСКАЯ БРИГАДА
+        </h2>
 
-            ${role("Линейный судья",match.line1)}
-            ${role("Линейный судья",match.line2)}
+        ${
+          rows ||
+          '<div class="empty">Состав бригады пока не указан.</div>'
+        }
 
-            ${role("Секретарь матча",match.secretary)}
+      </section>
 
-            ${role("Информатор",match.announcer)}
-
-            ${role(
-                "Судья при оштрафованных",
-                match.penalty1
-            )}
-
-            ${role(
-                "Судья при оштрафованных",
-                match.penalty2
-            )}
-
-            ${role(
-                "Судья за воротами",
-                match.goal1
-            )}
-
-            ${role(
-                "Судья за воротами",
-                match.goal2
-            )}
-
-        </div>
     `;
 
+
+  }catch(e){
+
+    box.innerHTML =
+      `<div class="empty">
+        Ошибка: ${esc(e.message)}
+      </div>`;
+
+  }
+
 }
 
 
-loadMatch();
+load();
 
 </script>
 
