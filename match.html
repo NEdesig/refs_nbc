@@ -1,145 +1,276 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Матч</title>
+<title>Матч</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f5f8;
-            color: #111;
-        }
+<style>
 
-        header {
-            background: #000056;
-            color: white;
-            padding: 22px 20px;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        header div {
-            max-width: 900px;
-            margin: auto;
-        }
+body {
+    font-family: "Unbounded", sans-serif;
+    background: #f3f3f3;
+    color: #1d1d1f;
+}
 
-        .back {
-            display: inline-block;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 15px;
-            opacity: 0.8;
-        }
+/* HEADER */
 
-        .back:hover {
-            opacity: 1;
-        }
+header {
+    background: #171719;
+    color: white;
+    padding: 21px 25px;
+}
 
-        .container {
-            max-width: 900px;
-            margin: 35px auto;
-            padding: 0 20px;
-        }
+.header-inner {
+    max-width: 1150px;
+    margin: auto;
 
-        .match-card {
-            background: white;
-            border-radius: 18px;
-            padding: 30px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+    display: flex;
+    align-items: center;
+}
 
-        .teams {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 25px;
-        }
+.back {
+    color: white;
+    text-decoration: none;
 
-        .date {
-            font-size: 19px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+    font-size: 11px;
+    font-weight: 500;
 
-        .time {
-            font-size: 19px;
-            margin-bottom: 8px;
-        }
+    opacity: .7;
 
-        .place {
-            color: #666;
-            font-size: 17px;
-        }
+    transition: .2s;
+}
 
-        .brigade {
-            background: white;
-            border-radius: 18px;
-            padding: 30px;
-        }
+.back:hover {
+    opacity: 1;
+}
 
-        .brigade-title {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 22px;
-        }
+/* MAIN */
 
-        .person {
-            padding: 17px 0;
-            border-bottom: 1px solid #e5e5e5;
-        }
+.container {
+    max-width: 900px;
+    margin: auto;
 
-        .person:last-child {
-            border-bottom: none;
-        }
+    padding: 40px 20px 70px;
+}
 
-        .role {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
+/* MATCH */
 
-        .name {
-            font-size: 18px;
-            font-weight: 700;
-        }
+.match-card {
+    background: #171719;
+    color: white;
 
-        .error {
-            background: white;
-            border-radius: 18px;
-            padding: 35px;
-            text-align: center;
-            color: #777;
-        }
+    border-radius: 28px;
 
-        @media (max-width: 600px) {
+    padding: 38px;
 
-            .teams {
-                font-size: 25px;
-            }
+    margin-bottom: 18px;
+}
 
-            .match-card,
-            .brigade {
-                padding: 22px;
-            }
-        }
-    </style>
+.match-label {
+    color: #ff5a1f;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    margin-bottom: 20px;
+}
+
+.teams {
+    font-size: 34px;
+    line-height: 1.4;
+
+    font-weight: 800;
+
+    letter-spacing: -1.5px;
+
+    margin-bottom: 35px;
+}
+
+.match-info {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 25px;
+
+    color: #c4c4c4;
+
+    font-size: 12px;
+}
+
+.match-info strong {
+    color: white;
+}
+
+/* BRIGADE */
+
+.brigade {
+    background: white;
+
+    border-radius: 28px;
+
+    padding: 30px;
+
+    border: 1px solid #e3e3e3;
+}
+
+.brigade-title {
+    font-size: 22px;
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    margin-bottom: 10px;
+}
+
+.brigade-subtitle {
+    color: #888;
+
+    font-size: 10px;
+
+    margin-bottom: 20px;
+}
+
+/* PERSON */
+
+.person {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 20px 0;
+
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.person:last-child {
+    border-bottom: none;
+}
+
+.role {
+    font-size: 10px;
+
+    color: #888;
+
+    font-weight: 500;
+
+    margin-bottom: 6px;
+}
+
+.name {
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+.person::after {
+    content: "→";
+
+    width: 35px;
+    height: 35px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f0f0f0;
+
+    font-size: 15px;
+
+    flex-shrink: 0;
+}
+
+/* EMPTY */
+
+.empty {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #888;
+
+    font-size: 11px;
+}
+
+/* MOBILE */
+
+@media(max-width:700px) {
+
+    header {
+        padding: 20px;
+    }
+
+    .container {
+        padding: 25px 16px 55px;
+    }
+
+    .match-card {
+        padding: 27px 23px;
+        border-radius: 23px;
+    }
+
+    .teams {
+        font-size: 24px;
+    }
+
+    .match-info {
+        flex-direction: column;
+        gap: 11px;
+    }
+
+    .brigade {
+        padding: 23px;
+        border-radius: 23px;
+    }
+
+    .brigade-title {
+        font-size: 19px;
+    }
+
+    .person {
+        padding: 18px 0;
+    }
+
+    .name {
+        font-size: 13px;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
 <header>
-    <div>
-        <a href="index.html" class="back">
-            ← Все матчи
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="back">
+
+            ← ВСЕ МАТЧИ
+
         </a>
+
     </div>
+
 </header>
 
 
@@ -152,65 +283,85 @@
 
 <script>
 
-    function getMatches() {
-        return JSON.parse(localStorage.getItem("matches")) || [];
+function getMatches() {
+
+    return JSON.parse(
+        localStorage.getItem("matches")
+    ) || [];
+
+}
+
+
+function getMonth(month) {
+
+    const months = {
+        "01":"января",
+        "02":"февраля",
+        "03":"марта",
+        "04":"апреля",
+        "05":"мая",
+        "06":"июня",
+        "07":"июля",
+        "08":"августа",
+        "09":"сентября",
+        "10":"октября",
+        "11":"ноября",
+        "12":"декабря"
+    };
+
+    return months[month] || month;
+
+}
+
+
+function formatDate(date) {
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) {
+        return date;
+    }
+
+    return `${parts[2]} ${getMonth(parts[1])} ${parts[0]}`;
+
+}
+
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+function addPerson(
+    container,
+    role,
+    name
+) {
+
+    if (!name || !name.trim()) {
+        return;
     }
 
 
-    function getMonth(month) {
+    const person =
+        document.createElement("div");
 
-        const months = {
-            "01": "января",
-            "02": "февраля",
-            "03": "марта",
-            "04": "апреля",
-            "05": "мая",
-            "06": "июня",
-            "07": "июля",
-            "08": "августа",
-            "09": "сентября",
-            "10": "октября",
-            "11": "ноября",
-            "12": "декабря"
-        };
-
-        return months[month] || month;
-    }
+    person.className =
+        "person";
 
 
-    function formatDate(date) {
+    person.innerHTML = `
 
-        const parts = date.split("-");
+        <div>
 
-        if (parts.length !== 3) {
-            return date;
-        }
-
-        return `${parts[2]} ${getMonth(parts[1])} ${parts[0]}`;
-    }
-
-
-    function escapeHtml(text) {
-
-        const div = document.createElement("div");
-
-        div.textContent = text || "";
-
-        return div.innerHTML;
-    }
-
-
-    function addPerson(container, role, name) {
-
-        if (!name || !name.trim()) {
-            return;
-        }
-
-        const person = document.createElement("div");
-
-        person.className = "person";
-
-        person.innerHTML = `
             <div class="role">
                 ${escapeHtml(role)}
             </div>
@@ -218,153 +369,189 @@
             <div class="name">
                 ${escapeHtml(name)}
             </div>
-        `;
 
-        container.appendChild(person);
-    }
+        </div>
 
-
-    function showMatch() {
-
-        const content =
-            document.getElementById("content");
-
-        const selectedId =
-            Number(localStorage.getItem("selectedMatch"));
-
-        const matches = getMatches();
-
-        const match =
-            matches.find(item => item.id === selectedId);
+    `;
 
 
-        if (!match) {
+    container.appendChild(person);
 
-            content.innerHTML = `
-                <div class="error">
-                    Матч не найден.
-                    <br><br>
-                    <a href="index.html">
-                        Вернуться к матчам
-                    </a>
-                </div>
-            `;
+}
 
-            return;
-        }
 
+function showMatch() {
+
+    const content =
+        document.getElementById("content");
+
+
+    const selectedId =
+        Number(
+            localStorage.getItem(
+                "selectedMatch"
+            )
+        );
+
+
+    const match =
+        getMatches().find(
+            item => item.id === selectedId
+        );
+
+
+    if (!match) {
 
         content.innerHTML = `
 
-            <section class="match-card">
+            <div class="brigade">
 
-                <div class="teams">
-                    ${escapeHtml(match.team1)}
-                    —
-                    ${escapeHtml(match.team2)}
+                <div class="empty">
+                    МАТЧ НЕ НАЙДЕН
                 </div>
 
-                <div class="date">
-                    ${formatDate(match.date)}
-                </div>
+            </div>
 
-                <div class="time">
-                    ${escapeHtml(match.time)}
-                </div>
-
-                <div class="place">
-                    ${escapeHtml(match.place)}
-                </div>
-
-            </section>
-
-
-            <section class="brigade">
-
-                <div class="brigade-title">
-                    Судейская бригада
-                </div>
-
-                <div id="people"></div>
-
-            </section>
         `;
 
-
-        const people =
-            document.getElementById("people");
-
-
-        addPerson(
-            people,
-            "Главный судья",
-            match.mainReferee1
-        );
-
-
-        addPerson(
-            people,
-            "Главный судья",
-            match.mainReferee2
-        );
-
-
-        addPerson(
-            people,
-            "Линейный судья",
-            match.lineReferee1
-        );
-
-
-        addPerson(
-            people,
-            "Линейный судья",
-            match.lineReferee2
-        );
-
-
-        addPerson(
-            people,
-            "Секретарь матча",
-            match.secretary
-        );
-
-
-        addPerson(
-            people,
-            "Информатор",
-            match.announcer
-        );
-
-
-        addPerson(
-            people,
-            "Судьи при оштрафованных",
-            match.penaltyJudges
-        );
-
-
-        addPerson(
-            people,
-            "Судьи за воротами",
-            match.goalJudges
-        );
-
-
-        if (people.innerHTML.trim() === "") {
-
-            people.innerHTML = `
-                <div style="color:#777;">
-                    Судейская бригада пока не назначена.
-                </div>
-            `;
-
-        }
+        return;
 
     }
 
 
-    showMatch();
+    content.innerHTML = `
+
+        <section class="match-card">
+
+            <div class="match-label">
+                МАТЧ
+            </div>
+
+            <div class="teams">
+
+                ${escapeHtml(match.team1)}
+                —
+                ${escapeHtml(match.team2)}
+
+            </div>
+
+
+            <div class="match-info">
+
+                <span>
+                    <strong>
+                        ${formatDate(match.date)}
+                    </strong>
+                </span>
+
+                <span>
+                    <strong>
+                        ${escapeHtml(match.time)}
+                    </strong>
+                </span>
+
+                <span>
+                    ${escapeHtml(match.place)}
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <section class="brigade">
+
+            <div class="brigade-title">
+                СУДЕЙСКАЯ БРИГАДА
+            </div>
+
+            <div class="brigade-subtitle">
+                НАЗНАЧЕННЫЕ ОФИЦИАЛЬНЫЕ ЛИЦА МАТЧА
+            </div>
+
+            <div id="people"></div>
+
+        </section>
+
+    `;
+
+
+    const people =
+        document.getElementById("people");
+
+
+    addPerson(
+        people,
+        "ГЛАВНЫЙ СУДЬЯ",
+        match.mainReferee1
+    );
+
+
+    addPerson(
+        people,
+        "ГЛАВНЫЙ СУДЬЯ",
+        match.mainReferee2
+    );
+
+
+    addPerson(
+        people,
+        "ЛИНЕЙНЫЙ СУДЬЯ",
+        match.lineReferee1
+    );
+
+
+    addPerson(
+        people,
+        "ЛИНЕЙНЫЙ СУДЬЯ",
+        match.lineReferee2
+    );
+
+
+    addPerson(
+        people,
+        "СЕКРЕТАРЬ МАТЧА",
+        match.secretary
+    );
+
+
+    addPerson(
+        people,
+        "ИНФОРМАТОР",
+        match.announcer
+    );
+
+
+    addPerson(
+        people,
+        "СУДЬИ ПРИ ОШТРАФОВАННЫХ",
+        match.penaltyJudges
+    );
+
+
+    addPerson(
+        people,
+        "СУДЬИ ЗА ВОРОТАМИ",
+        match.goalJudges
+    );
+
+
+    if (!people.innerHTML.trim()) {
+
+        people.innerHTML = `
+
+            <div class="empty">
+                СУДЕЙСКАЯ БРИГАДА ПОКА НЕ НАЗНАЧЕНА
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+showMatch();
 
 </script>
 
