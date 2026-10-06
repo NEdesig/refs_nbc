@@ -254,6 +254,7 @@ a{
 .person{
   font-size:11px;
   font-weight:600;
+  line-height:1.5;
 }
 
 .admin-grid{
@@ -378,7 +379,7 @@ select:focus{
   }
 
   .wrap{
-    padding:20px 14px 50px;
+    padding:20px 14px 35px;
   }
 
   .hero{
@@ -400,9 +401,30 @@ select:focus{
     grid-column:auto;
   }
 
+  /* Компактный список судей на телефоне */
+  .brigade{
+    padding:14px;
+  }
+
+  .brigade h2{
+    margin-bottom:8px;
+    font-size:14px;
+  }
+
   .ref-row{
-    grid-template-columns:1fr;
-    gap:6px;
+    grid-template-columns:115px 1fr;
+    gap:8px;
+    padding:9px 0;
+  }
+
+  .role{
+    font-size:8px;
+    line-height:1.4;
+  }
+
+  .person{
+    font-size:10px;
+    line-height:1.4;
   }
 
   .match-card{
