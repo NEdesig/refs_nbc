@@ -12,10 +12,9 @@
 
 <title>Админка — REF HOCKEY</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=4">
 
 </head>
-
 
 <body>
 
@@ -27,18 +26,6 @@
       REF HOCKEY
     </a>
 
-    <nav class="nav">
-
-      <a href="index.html">
-        Матчи
-      </a>
-
-      <a class="active" href="admin.html">
-        Админка
-      </a>
-
-    </nav>
-
   </div>
 
 </header>
@@ -46,18 +33,93 @@
 
 <main class="wrap">
 
-  <h1
-    class="section-title"
-    style="margin-top:10px"
-  >
-    АДМИНКА
-  </h1>
+
+<!-- ================= LOGIN ================= -->
+
+<section
+  id="loginScreen"
+  class="auth-box"
+>
+
+  <div class="panel auth-panel">
+
+    <h1>
+      ВХОД В АДМИНКУ
+    </h1>
+
+    <form id="loginForm">
+
+      <label>
+        EMAIL
+      </label>
+
+      <input
+        id="loginEmail"
+        type="email"
+        required
+        placeholder="admin@email.com"
+      >
+
+
+      <label>
+        ПАРОЛЬ
+      </label>
+
+      <input
+        id="loginPassword"
+        type="password"
+        required
+        placeholder="••••••••"
+      >
+
+
+      <button
+        class="btn"
+        type="submit"
+      >
+        ВОЙТИ
+      </button>
+
+    </form>
+
+
+    <div
+      id="loginStatus"
+      class="status"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= ADMIN ================= -->
+
+<section
+  id="adminScreen"
+  class="hidden"
+>
+
+  <div class="admin-head">
+
+    <h1 class="section-title">
+      АДМИНКА
+    </h1>
+
+    <button
+      id="logoutButton"
+      class="btn dark"
+    >
+      ВЫЙТИ
+    </button>
+
+  </div>
 
 
   <div class="admin-grid">
 
 
-    <!-- РЕЕСТР -->
+    <!-- ===== REFEREES ===== -->
 
     <section class="panel">
 
@@ -69,7 +131,7 @@
       <form id="refForm">
 
         <label>
-          ФИО судьи
+          ФИО СУДЬИ
         </label>
 
         <input
@@ -78,7 +140,9 @@
           placeholder="Иванов Иван Иванович"
         >
 
+
         <br><br>
+
 
         <button
           class="btn"
@@ -104,12 +168,11 @@
     </section>
 
 
-
-    <!-- ДОБАВЛЕНИЕ МАТЧА -->
+    <!-- ===== MATCH ===== -->
 
     <section class="panel">
 
-      <h2>
+      <h2 id="matchFormTitle">
         ДОБАВИТЬ МАТЧ
       </h2>
 
@@ -161,6 +224,11 @@
               required
             >
 
+            <div
+              id="weekday"
+              class="date-weekday"
+            ></div>
+
           </div>
 
 
@@ -198,17 +266,26 @@
           ></div>
 
 
-          <div class="full">
+          <div class="full form-buttons">
 
             <button
+              id="saveMatchButton"
               class="btn"
               type="submit"
             >
               ДОБАВИТЬ МАТЧ
             </button>
 
-          </div>
 
+            <button
+              id="cancelEditButton"
+              class="btn dark hidden"
+              type="button"
+            >
+              ОТМЕНА
+            </button>
+
+          </div>
 
         </div>
 
@@ -225,8 +302,7 @@
   </div>
 
 
-
-  <!-- СПИСОК МАТЧЕЙ -->
+  <!-- ===== MATCH LIST ===== -->
 
   <section
     class="panel"
@@ -234,7 +310,7 @@
   >
 
     <h2>
-      ДОБАВЛЕННЫЕ МАТЧИ
+      МАТЧИ
     </h2>
 
 
@@ -245,11 +321,12 @@
 
   </section>
 
+</section>
+
 </main>
 
 
 <script src="config.js"></script>
-
 
 <script>
 
@@ -280,99 +357,190 @@ const roleFields = [
 
 let referees = [];
 
+let editingMatchId = null;
+
+
+/* ================= AUTH ================= */
+
+
+function showAdmin(){
+
+  document
+    .getElementById("loginScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("adminScreen")
+    .classList.remove("hidden");
+
+}
+
+
+function showLogin(){
+
+  document
+    .getElementById("loginScreen")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("adminScreen")
+    .classList.add("hidden");
+
+}
+
+
+document
+  .getElementById("loginForm")
+  .addEventListener("submit",async event=>{
+
+    event.preventDefault();
+
+
+    const status =
+      document.getElementById("loginStatus");
+
+
+    status.className =
+      "status";
+
+    status.textContent =
+      "Вход...";
+
+
+    try{
+
+      await login(
+
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim(),
+
+        document
+          .getElementById("loginPassword")
+          .value
+
+      );
+
+
+      showAdmin();
+
+
+      await loadRefs();
+      await loadMatches();
+
+
+    }catch(error){
+
+      status.className =
+        "status error";
+
+      status.textContent =
+        error.message;
+
+    }
+
+  });
+
+
+document
+  .getElementById("logoutButton")
+  .addEventListener("click",async()=>{
+
+    await logout();
+
+    showLogin();
+
+  });
+
+
+/* ================= REFEREES ================= */
 
 
 function renderRefFields(){
 
-  document.getElementById("refFields").innerHTML =
+  document
+    .getElementById("refFields")
+    .innerHTML =
 
-    roleFields.map(([label,key]) => `
+      roleFields.map(
+        ([label,key])=>`
 
-      <div style="margin-bottom:10px">
+          <div style="margin-bottom:10px">
 
-        <label>
-          ${label}
-        </label>
+            <label>
+              ${esc(label)}
+            </label>
 
-        <select id="${key}">
+            <select id="${key}">
 
-          <option value="">
-            — не назначен —
-          </option>
-
-          ${
-            referees.map(r => `
-
-              <option value="${r.id}">
-                ${esc(r.name)}
+              <option value="">
+                — не назначен —
               </option>
 
-            `).join("")
-          }
+              ${
+                referees.map(referee=>`
 
-        </select>
+                  <option value="${referee.id}">
+                    ${esc(referee.name)}
+                  </option>
 
-      </div>
+                `).join("")
+              }
 
-    `).join("");
+            </select>
+
+          </div>
+
+        `
+      ).join("");
 
 }
-
 
 
 async function loadRefs(){
 
-  try{
-
-    referees =
-      await api(
-        "referees?select=id,name&order=name.asc"
-      );
+  referees =
+    await api(
+      "referees?select=id,name&order=name.asc"
+    );
 
 
-    document.getElementById("refList").innerHTML =
+  document
+    .getElementById("refList")
+    .innerHTML =
 
       referees.length
 
-        ? referees.map(r => `
+        ? referees.map(referee=>`
 
-          <div class="list-item">
+            <div class="list-item">
 
-            <span>
-              ${esc(r.name)}
-            </span>
+              <span>
+                ${esc(referee.name)}
+              </span>
 
-            <button
-              class="small-btn"
-              onclick="deleteRef(${r.id})"
-            >
-              Удалить
-            </button>
+              <button
+                class="small-btn"
+                onclick="deleteRef(${referee.id})"
+              >
+                Удалить
+              </button>
 
+            </div>
+
+          `).join("")
+
+        : `
+          <div class="empty">
+            Реестр пуст.
           </div>
-
-        `).join("")
-
-        :
-
-        '<div class="empty">Реестр пуст.</div>';
+        `;
 
 
-    renderRefFields();
-
-
-  }catch(e){
-
-    document.getElementById("refStatus").className =
-      "status error";
-
-    document.getElementById("refStatus").textContent =
-      "Ошибка: " + e.message;
-
-  }
+  renderRefFields();
 
 }
-
 
 
 async function deleteRef(id){
@@ -397,10 +565,11 @@ async function deleteRef(id){
     await loadRefs();
 
 
-  }catch(e){
+  }catch(error){
 
     alert(
-      "Ошибка: " + e.message
+      "Ошибка: " +
+      error.message
     );
 
   }
@@ -408,142 +577,319 @@ async function deleteRef(id){
 }
 
 
-
 document
   .getElementById("refForm")
+  .addEventListener("submit",async event=>{
+
+    event.preventDefault();
+
+
+    const status =
+      document.getElementById("refStatus");
+
+
+    try{
+
+      await api(
+        "referees",
+        {
+          method:"POST",
+
+          headers:{
+            "Prefer":"return=minimal"
+          },
+
+          body:JSON.stringify({
+
+            name:
+              document
+                .getElementById("refName")
+                .value
+                .trim()
+
+          })
+
+        }
+      );
+
+
+      document
+        .getElementById("refName")
+        .value = "";
+
+
+      status.className =
+        "status ok";
+
+      status.textContent =
+        "Судья добавлен.";
+
+
+      await loadRefs();
+
+
+    }catch(error){
+
+      status.className =
+        "status error";
+
+      status.textContent =
+        "Ошибка: " +
+        error.message;
+
+    }
+
+  });
+
+
+/* ================= WEEKDAY ================= */
+
+
+document
+  .getElementById("date")
+  .addEventListener("change",()=>{
+
+    const date =
+      document
+        .getElementById("date")
+        .value;
+
+
+    document
+      .getElementById("weekday")
+      .textContent =
+        date
+          ? getWeekday(date)
+          : "";
+
+  });
+
+
+/* ================= MATCH FORM ================= */
+
+
+function resetMatchForm(){
+
+  editingMatchId = null;
+
+
+  document
+    .getElementById("matchForm")
+    .reset();
+
+
+  document
+    .getElementById("matchFormTitle")
+    .textContent =
+      "ДОБАВИТЬ МАТЧ";
+
+
+  document
+    .getElementById("saveMatchButton")
+    .textContent =
+      "ДОБАВИТЬ МАТЧ";
+
+
+  document
+    .getElementById("cancelEditButton")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("weekday")
+    .textContent = "";
+
+
+  renderRefFields();
+
+}
+
+
+function editMatch(match){
+
+  editingMatchId =
+    match.id;
+
+
+  document
+    .getElementById("matchFormTitle")
+    .textContent =
+      "РЕДАКТИРОВАТЬ МАТЧ";
+
+
+  document
+    .getElementById("saveMatchButton")
+    .textContent =
+      "СОХРАНИТЬ ИЗМЕНЕНИЯ";
+
+
+  document
+    .getElementById("cancelEditButton")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("team1")
+    .value =
+      match.team1 || "";
+
+
+  document
+    .getElementById("team2")
+    .value =
+      match.team2 || "";
+
+
+  document
+    .getElementById("date")
+    .value =
+      match.match_date || "";
+
+
+  document
+    .getElementById("time")
+    .value =
+      match.match_time || "";
+
+
+  document
+    .getElementById("place")
+    .value =
+      match.place || "";
+
+
+  document
+    .getElementById("weekday")
+    .textContent =
+      match.match_date
+        ? getWeekday(match.match_date)
+        : "";
+
+
+  roleFields.forEach(([,key])=>{
+
+    const select =
+      document.getElementById(key);
+
+
+    if(select){
+
+      select.value =
+        match[key]
+          ? String(match[key])
+          : "";
+
+    }
+
+  });
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+document
+  .getElementById("cancelEditButton")
   .addEventListener(
-    "submit",
-    async e => {
-
-      e.preventDefault();
-
-
-      const status =
-        document.getElementById("refStatus");
+    "click",
+    resetMatchForm
+  );
 
 
-      try{
+document
+  .getElementById("matchForm")
+  .addEventListener("submit",async event=>{
+
+    event.preventDefault();
+
+
+    const status =
+      document
+        .getElementById("matchStatus");
+
+
+    const data = {
+
+      team1:
+        document
+          .getElementById("team1")
+          .value
+          .trim(),
+
+      team2:
+        document
+          .getElementById("team2")
+          .value
+          .trim(),
+
+      match_date:
+        document
+          .getElementById("date")
+          .value ||
+        null,
+
+      match_time:
+        document
+          .getElementById("time")
+          .value ||
+        null,
+
+      place:
+        document
+          .getElementById("place")
+          .value
+          .trim() ||
+        null
+
+    };
+
+
+    roleFields.forEach(([,key])=>{
+
+      const value =
+        document
+          .getElementById(key)
+          ?.value;
+
+
+      data[key] =
+        value
+          ? Number(value)
+          : null;
+
+    });
+
+
+    try{
+
+      if(editingMatchId){
 
         await api(
-          "referees",
+          `matches?id=eq.${editingMatchId}`,
           {
-            method:"POST",
+            method:"PATCH",
 
             headers:{
               "Prefer":"return=minimal"
             },
 
-            body:JSON.stringify({
-
-              name:
-                document
-                  .getElementById("refName")
-                  .value
-                  .trim()
-
-            })
+            body:JSON.stringify(data)
 
           }
         );
-
-
-        document
-          .getElementById("refName")
-          .value = "";
 
 
         status.className =
           "status ok";
 
         status.textContent =
-          "Судья добавлен.";
+          "Матч изменён.";
 
-
-        await loadRefs();
-
-
-      }catch(err){
-
-        status.className =
-          "status error";
-
-        status.textContent =
-          "Ошибка: " + err.message;
-
-      }
-
-    }
-  );
-
-
-
-document
-  .getElementById("matchForm")
-  .addEventListener(
-    "submit",
-    async e => {
-
-      e.preventDefault();
-
-
-      const status =
-        document.getElementById("matchStatus");
-
-
-      const data = {
-
-        team1:
-          document
-            .getElementById("team1")
-            .value
-            .trim(),
-
-        team2:
-          document
-            .getElementById("team2")
-            .value
-            .trim(),
-
-        match_date:
-          document
-            .getElementById("date")
-            .value ||
-          null,
-
-        match_time:
-          document
-            .getElementById("time")
-            .value ||
-          null,
-
-        place:
-          document
-            .getElementById("place")
-            .value
-            .trim() ||
-          null
-
-      };
-
-
-      roleFields.forEach(
-        ([,key]) => {
-
-          const v =
-            document
-              .getElementById(key)
-              ?.value;
-
-          data[key] =
-            v
-              ? Number(v)
-              : null;
-
-        }
-      );
-
-
-      try{
+      }else{
 
         await api(
           "matches",
@@ -554,8 +900,7 @@ document
               "Prefer":"return=minimal"
             },
 
-            body:
-              JSON.stringify(data)
+            body:JSON.stringify(data)
 
           }
         );
@@ -567,26 +912,29 @@ document
         status.textContent =
           "Матч добавлен.";
 
-
-        e.target.reset();
-
-
-        await loadMatches();
-
-
-      }catch(err){
-
-        status.className =
-          "status error";
-
-        status.textContent =
-          "Ошибка: " + err.message;
-
       }
 
-    }
-  );
 
+      resetMatchForm();
+
+      await loadMatches();
+
+
+    }catch(error){
+
+      status.className =
+        "status error";
+
+      status.textContent =
+        "Ошибка: " +
+        error.message;
+
+    }
+
+  });
+
+
+/* ================= MATCH LIST ================= */
 
 
 async function loadMatches(){
@@ -607,64 +955,94 @@ async function loadMatches(){
 
       matches.length
 
-        ? matches.map(m => `
+        ? matches.map(match=>`
 
-          <div class="list-item">
+            <div class="list-item">
 
-            <span>
+              <span>
 
-              <b>
-                ${esc(m.team1)}
-                —
-                ${esc(m.team2)}
-              </b>
+                <b>
+                  ${esc(match.team1)}
+                  —
+                  ${esc(match.team2)}
+                </b>
 
-              <br>
+                <br>
 
-              ${formatDate(m.match_date)}
-              ·
-              ${esc(m.match_time || "")}
-              ·
-              ${esc(m.place || "")}
+                ${esc(
+                  formatDateWithWeekday(
+                    match.match_date
+                  )
+                )}
 
-            </span>
+                ·
+
+                ${esc(match.match_time || "")}
+
+                ·
+
+                ${esc(match.place || "")}
+
+                <br>
+
+                <small>
+
+                  ${
+                    isArchived(match)
+                      ? "АРХИВ"
+                      : "ПРЕДСТОЯЩИЙ"
+                  }
+
+                </small>
+
+              </span>
 
 
-            <div
-              style="display:flex;gap:7px"
-            >
-
-              <a
-                class="small-btn"
-                href="match.html?id=${m.id}"
+              <div
+                style="display:flex;gap:7px;flex-wrap:wrap"
               >
-                Открыть
-              </a>
+
+                <a
+                  class="small-btn"
+                  href="match.html?id=${match.id}"
+                >
+                  Открыть
+                </a>
 
 
-              <button
-                class="small-btn"
-                onclick="deleteMatch(${m.id})"
-              >
-                Удалить
-              </button>
+                <button
+                  class="small-btn"
+                  onclick='editMatch(${JSON.stringify(match).replace(/'/g,"&#39;")})'
+                >
+                  Изменить
+                </button>
+
+
+                <button
+                  class="small-btn"
+                  onclick="deleteMatch(${match.id})"
+                >
+                  Удалить
+                </button>
+
+              </div>
 
             </div>
 
+          `).join("")
+
+        : `
+          <div class="empty">
+            Матчей пока нет.
           </div>
-
-        `).join("")
-
-        :
-
-        '<div class="empty">Матчей пока нет.</div>';
+        `;
 
 
-  }catch(e){
+  }catch(error){
 
     box.innerHTML =
       `<div class="status error">
-        Ошибка: ${esc(e.message)}
+        Ошибка: ${esc(error.message)}
       </div>`;
 
   }
@@ -672,11 +1050,12 @@ async function loadMatches(){
 }
 
 
-
 async function deleteMatch(id){
 
   if(
-    !confirm("Удалить матч?")
+    !confirm(
+      "Удалить матч?"
+    )
   ) return;
 
 
@@ -693,10 +1072,11 @@ async function deleteMatch(id){
     await loadMatches();
 
 
-  }catch(e){
+  }catch(error){
 
     alert(
-      "Ошибка: " + e.message
+      "Ошибка: " +
+      error.message
     );
 
   }
@@ -704,18 +1084,31 @@ async function deleteMatch(id){
 }
 
 
+/* ================= START ================= */
 
-(async()=>{
 
-  await loadRefs();
+if(getSession()){
 
-  await loadMatches();
+  showAdmin();
 
-})();
+  loadRefs()
+    .then(loadMatches)
+    .catch(error=>{
+
+      showLogin();
+
+      console.error(error);
+
+    });
+
+}else{
+
+  showLogin();
+
+}
 
 </script>
 
-<script src="config.js"></script>
-  
 </body>
+
 </html>
