@@ -2,12 +2,18 @@
 <html lang="ru">
 
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
 
 <title>REF HOCKEY</title>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -22,12 +28,16 @@
 
     <nav class="nav">
 
-      <a class="active" href="index.html">
+      <a
+        id="matchesTab"
+        class="active"
+        href="index.html"
+      >
         Матчи
       </a>
 
-      <a href="admin.html">
-        Админка
+      <a href="index.html?archive=1">
+        Архив
       </a>
 
     </nav>
@@ -43,12 +53,12 @@
 
     <div>
 
-      <h1>
-        СУДЕЙСКИЕ БРИГАДЫ
+      <h1 id="pageTitle">
+        БЛИЖАЙШИЕ МАТЧИ
       </h1>
 
       <p>
-        Матчи и составы судейских бригад.
+        Судейские бригады хоккейных матчей.
       </p>
 
     </div>
@@ -56,17 +66,18 @@
   </section>
 
 
-  <h2 class="section-title">
-    БЛИЖАЙШИЕ МАТЧИ
-  </h2>
-
-
-  <div id="status" class="status">
+  <div
+    id="status"
+    class="status"
+  >
     Загрузка...
   </div>
 
 
-  <section id="matches" class="matches"></section>
+  <section
+    id="matches"
+    class="matches"
+  ></section>
 
 </main>
 
@@ -74,6 +85,28 @@
 <script src="config.js"></script>
 
 <script>
+
+let archiveMode =
+  new URLSearchParams(location.search).get("archive") === "1";
+
+
+function renderNavigation(){
+
+  const matchesTab =
+    document.getElementById("matchesTab");
+
+  if(archiveMode){
+
+    matchesTab.classList.remove("active");
+
+  }else{
+
+    matchesTab.classList.add("active");
+
+  }
+
+}
+
 
 async function loadMatches(){
 
@@ -83,6 +116,16 @@ async function loadMatches(){
   const box =
     document.getElementById("matches");
 
+  const title =
+    document.getElementById("pageTitle");
+
+
+  title.textContent =
+    archiveMode
+      ? "АРХИВ МАТЧЕЙ"
+      : "БЛИЖАЙШИЕ МАТЧИ";
+
+
   try{
 
     const matches =
@@ -90,39 +133,73 @@ async function loadMatches(){
         "matches?select=*&order=match_date.asc,match_time.asc"
       );
 
+
+    const filtered =
+      matches.filter(match =>
+        archiveMode
+          ? isArchived(match)
+          : !isArchived(match)
+      );
+
+
     status.textContent = "";
 
-    if(!matches.length){
 
-      box.innerHTML =
-        '<div class="empty">Матчей пока нет.</div>';
+    if(!filtered.length){
+
+      box.innerHTML = `
+        <div class="empty">
+          ${
+            archiveMode
+              ? "В архиве пока нет матчей."
+              : "Ближайших матчей пока нет."
+          }
+        </div>
+      `;
 
       return;
     }
 
+
     box.innerHTML =
-      matches.map(m => `
+      filtered.map(match => `
 
         <article
           class="match-card"
-          onclick="location.href='match.html?id=${m.id}'"
+          onclick="location.href='match.html?id=${match.id}'"
         >
 
           <div class="match-date">
-            ${formatDate(m.match_date)}
+
+            ${esc(
+              formatDateWithWeekday(match.match_date)
+            )}
+
           </div>
 
+
           <div class="teams">
-            ${esc(m.team1)} — ${esc(m.team2)}
+
+            ${esc(match.team1)}
+            —
+            ${esc(match.team2)}
+
           </div>
+
 
           <div class="match-meta">
 
-            ${esc(m.match_time || "")}
+            ${
+              match.match_time
+                ? esc(match.match_time)
+                : ""
+            }
 
-            <br>
-
-            ${esc(m.place || "")}
+            ${
+              match.place
+                ? `<br>${esc(match.place)}`
+                : ""
+            }
 
           </div>
 
@@ -130,23 +207,33 @@ async function loadMatches(){
 
       `).join("");
 
-  }catch(e){
+  }catch(error){
 
     status.className =
       "status error";
 
     status.textContent =
-      "Ошибка загрузки: " + e.message;
+      "Ошибка загрузки: " +
+      error.message;
 
   }
 
 }
 
+
+renderNavigation();
 loadMatches();
+
+
+// Автоматически проверяем время
+// каждые 30 секунд.
+// Поэтому матч попадёт в архив практически
+// сразу после наступления времени.
+
+setInterval(loadMatches,30000);
 
 </script>
 
-<script src="config.js"></script>
-  
 </body>
+
 </html>
