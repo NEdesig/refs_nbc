@@ -145,6 +145,35 @@
 
 <script>
 
+
+function updateBirthdayGreeting(){
+  const greeting = document.getElementById("birthdayGreeting");
+
+  if(!greeting) return;
+
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Moscow",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+
+  const dateParts = {};
+
+  parts.forEach(part => {
+    dateParts[part.type] = part.value;
+  });
+
+  const today =
+    `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+
+  greeting.hidden = today !== "2026-10-18";
+}
+
+updateBirthdayGreeting();
+setInterval(updateBirthdayGreeting, 60000);
+
+  
 let archiveMode =
   new URLSearchParams(location.search).get("archive") === "1";
 
