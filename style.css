@@ -401,6 +401,106 @@ input:focus,select:focus{
   margin-top:28px;
 }
 
+/* ЕДИНЫЙ ВХОД */
+
+.poll-login-panel{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:22px;
+  padding:23px 25px;
+  background:#fff;
+  border:1px solid #eaeaec;
+  border-radius:20px;
+}
+
+.poll-login-info{
+  min-width:0;
+}
+
+.poll-login-label{
+  color:var(--orange);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:1.3px;
+  margin-bottom:10px;
+}
+
+.poll-login-heading{
+  font-size:17px;
+  font-weight:700;
+  line-height:1.4;
+}
+
+.poll-login-description{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.7;
+}
+
+.poll-login-form{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  width:min(100%,390px);
+}
+
+.poll-login-form input{
+  min-width:0;
+  font-size:12px;
+  padding:14px;
+  text-transform:uppercase;
+}
+
+.poll-login-form .btn{
+  flex-shrink:0;
+  font-size:10px;
+}
+
+.poll-login-panel.logged-in{
+  background:#171619;
+  border-color:#171619;
+  color:#fff;
+}
+
+.poll-login-panel.logged-in .poll-login-label{
+  color:var(--orange2);
+}
+
+.poll-login-name{
+  font-size:17px;
+  font-weight:700;
+  line-height:1.5;
+}
+
+.poll-login-code{
+  margin-top:5px;
+  color:#aaa;
+  font-size:10px;
+  letter-spacing:1px;
+}
+
+.poll-logout{
+  flex-shrink:0;
+  padding:12px 17px;
+  border:1px solid #48464b;
+  border-radius:10px;
+  background:#29272b;
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.18s;
+}
+
+.poll-logout:hover{
+  background:var(--orange);
+  border-color:var(--orange);
+}
+
+/* КАРТОЧКА ГОЛОСОВАНИЯ */
+
 .poll-card{
   background:#fff;
   border:1px solid #eaeaec;
@@ -458,6 +558,8 @@ input:focus,select:focus{
   line-height:1.8;
 }
 
+/* ОБЩЕЕ КОЛИЧЕСТВО УЧАСТНИКОВ */
+
 .poll-total{
   display:flex;
   align-items:baseline;
@@ -478,6 +580,8 @@ input:focus,select:focus{
   font-size:10px;
 }
 
+/* ВАРИАНТЫ */
+
 .poll-options{
   display:flex;
   flex-direction:column;
@@ -485,45 +589,144 @@ input:focus,select:focus{
 }
 
 .poll-option{
-  padding:17px;
-  border:1px solid #e9e9eb;
-  border-radius:16px;
+  position:relative;
+  display:block;
+  margin:0;
+  padding:19px;
+  border:1.5px solid #e5e4e7;
+  border-radius:17px;
+  background:#fff;
+  cursor:pointer;
+  min-width:0;
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+
+.poll-option:hover{
+  border-color:#f5a17c;
+  background:#fffaf7;
+}
+
+.poll-option.is-selected{
+  border:2px solid var(--orange);
+  padding:18.5px;
+  background:#fff0e8;
+  box-shadow:0 5px 20px #f36b2b18;
+}
+
+.poll-option.is-selected:hover{
+  background:#ffebe0;
+}
+
+.poll-option.is-disabled{
+  cursor:default;
+}
+
+.poll-option.is-disabled:hover{
+  border-color:#e5e4e7;
+  background:#fff;
+}
+
+.poll-option.is-disabled.is-selected:hover{
+  border-color:var(--orange);
+  background:#fff0e8;
+}
+
+.poll-option-input{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+  pointer-events:none;
+}
+
+.poll-option-content{
+  display:block;
   min-width:0;
 }
 
 .poll-option-top{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
+  align-items:center;
+  gap:14px;
 }
 
 .poll-option-name{
-  font-size:12px;
+  min-width:0;
+  font-size:14px;
   font-weight:600;
-  line-height:1.6;
+  line-height:1.65;
   overflow-wrap:anywhere;
+  transition:font-size .18s ease;
+}
+
+.poll-option.is-selected .poll-option-name{
+  color:#c84e18;
+  font-size:16px;
+  font-weight:700;
+}
+
+.poll-option-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-shrink:0;
 }
 
 .poll-option-count{
-  flex-shrink:0;
   font-size:11px;
   font-weight:700;
   color:var(--orange);
   white-space:nowrap;
 }
 
+.poll-checkmark{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:23px;
+  height:23px;
+  flex-shrink:0;
+  border:1.5px solid #c9c7cb;
+  border-radius:7px;
+  background:#fff;
+  transition:.18s;
+}
+
+.poll-checkmark::after{
+  content:"";
+  width:6px;
+  height:11px;
+  border:solid #fff;
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg) scale(0);
+  transition:transform .15s ease;
+}
+
+.poll-option.is-selected .poll-checkmark{
+  background:var(--orange);
+  border-color:var(--orange);
+}
+
+.poll-option.is-selected .poll-checkmark::after{
+  transform:rotate(45deg) scale(1);
+}
+
 .poll-option-details{
-  margin-top:6px;
+  margin-top:7px;
   color:var(--muted);
-  font-size:9px;
+  font-size:10px;
   line-height:1.6;
 }
 
 .poll-progress{
   width:100%;
   height:7px;
-  margin:13px 0;
+  margin:15px 0;
   background:#eeeeef;
   border-radius:20px;
   overflow:hidden;
@@ -536,10 +739,19 @@ input:focus,select:focus{
   transition:width .25s ease;
 }
 
+.poll-option-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
 .poll-voters{
   display:flex;
   flex-wrap:wrap;
   gap:7px;
+  min-width:0;
 }
 
 .poll-voter{
@@ -558,43 +770,24 @@ input:focus,select:focus{
   font-size:9px;
 }
 
-.poll-choice{
-  display:flex;
+.poll-your-choice{
+  display:inline-flex;
   align-items:center;
-  gap:9px;
-  margin:14px 0 0;
-  padding-top:12px;
-  border-top:1px solid #eee;
-  cursor:pointer;
-  color:var(--black);
-  font-size:10px;
-}
-
-.poll-choice input{
-  appearance:none;
-  -webkit-appearance:none;
-  flex:0 0 17px;
-  width:17px;
-  height:17px;
-  margin:0;
-  padding:0;
-  border:1.5px solid #aaa;
-  border-radius:50%;
-  cursor:pointer;
-  position:relative;
-}
-
-.poll-choice input:checked{
-  border-color:var(--orange);
-}
-
-.poll-choice input:checked::after{
-  content:"";
-  position:absolute;
-  inset:4px;
+  flex-shrink:0;
+  padding:7px 9px;
+  border-radius:7px;
   background:var(--orange);
-  border-radius:50%;
+  color:#fff;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.5px;
 }
+
+.poll-your-choice[hidden]{
+  display:none!important;
+}
+
+/* ФОРМА ГОЛОСОВАНИЯ */
 
 .poll-vote-form{
   margin-top:25px;
@@ -610,17 +803,11 @@ input:focus,select:focus{
   letter-spacing:1px;
 }
 
-.poll-form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.poll-form-grid label{
+.poll-vote-form label{
   margin-bottom:8px;
 }
 
-.poll-form-grid input{
+.poll-vote-form input{
   font-size:11px;
   padding:13px;
 }
@@ -637,6 +824,17 @@ input:focus,select:focus{
   color:var(--muted);
   font-size:9px;
   line-height:1.7;
+  text-align:center;
+}
+
+.poll-login-required{
+  margin-top:20px;
+  padding:17px;
+  border-radius:12px;
+  background:#f6f6f7;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.8;
   text-align:center;
 }
 
@@ -732,24 +930,94 @@ input:focus,select:focus{
     gap:9px;
   }
 
+  .poll-login-panel{
+    align-items:stretch;
+    flex-direction:column;
+    padding:19px 16px;
+    gap:17px;
+  }
+
+  .poll-login-form{
+    width:100%;
+  }
+
+  .poll-login-form input{
+    flex:1;
+  }
+
+  .poll-login-panel.logged-in{
+    flex-direction:row;
+    align-items:center;
+  }
+
   .poll-vote-form{
     padding:17px 13px;
   }
 
-  .poll-form-grid{
-    grid-template-columns:1fr;
+  .poll-option{
+    padding:15px 13px;
   }
 
-  .poll-option{
-    padding:14px 12px;
+  .poll-option.is-selected{
+    padding:14.5px 12.5px;
+  }
+
+  .poll-option-name{
+    font-size:12px;
+  }
+
+  .poll-option.is-selected .poll-option-name{
+    font-size:14px;
+  }
+
+  .poll-option-count{
+    font-size:10px;
+  }
+
+  .poll-option-right{
+    gap:8px;
+  }
+
+  .poll-checkmark{
+    width:21px;
+    height:21px;
+  }
+
+}
+
+@media(max-width:420px){
+
+  .poll-login-form{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .poll-login-form .btn{
+    width:100%;
+  }
+
+  .poll-login-panel.logged-in{
+    align-items:flex-start;
+  }
+
+  .poll-logout{
+    padding:10px 12px;
+  }
+
+  .poll-option-top{
+    align-items:flex-start;
+  }
+
+  .poll-option-right{
+    gap:6px;
   }
 
   .poll-option-name{
     font-size:11px;
   }
 
-  .poll-option-count{
-    font-size:10px;
+  .poll-option.is-selected .poll-option-name{
+    font-size:13px;
   }
 
 }
