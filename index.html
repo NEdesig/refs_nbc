@@ -1,161 +1,138 @@
+
 <!doctype html>
 <html lang="ru">
 
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>REF HOCKEY</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
 
 <header class="top">
-
   <div class="top-inner">
-
-    <a class="logo" href="index.html">
-      REF HOCKEY
-    </a>
+    <a class="logo" href="index.html">REF HOCKEY</a>
 
     <nav class="nav">
-
-      <a
-        id="matchesTab"
-        class="active"
-        href="index.html"
-      >
-        Матчи
-      </a>
-
-      <a href="index.html?archive=1">
-        Архив
-      </a>
-
+      <a id="matchesTab" href="index.html">Матчи</a>
+      <a id="archiveTab" href="index.html?archive=1">Архив</a>
+      <a id="pollsTab" href="index.html?polls=1">Голосования</a>
     </nav>
-
   </div>
-
 </header>
-
 
 <main class="wrap">
 
   <section class="hero">
-
     <div>
-
-      <h1 id="pageTitle">
-        БЛИЖАЙШИЕ МАТЧИ
-      </h1>
-
-      <p>
-        Судейские бригады хоккейных матчей.
-      </p>
-
+      <h1 id="pageTitle">БЛИЖАЙШИЕ МАТЧИ</h1>
+      <p id="pageSubtitle">Судейские бригады хоккейных матчей.</p>
     </div>
-
   </section>
 
-
-  
-<section id="birthdayGreeting" hidden style="
-  background: linear-gradient(135deg, #111113, #29272b);
-  color: #ffffff;
-  border: 1px solid #f36b2b;
-  border-radius: 22px;
-  padding: 30px 24px;
-  margin: 22px 0 28px;
-  text-align: center;
-">
-  <div style="font-size: 34px; margin-bottom: 12px;">🎂</div>
-
-  <div style="
-    color: #f36b2b;
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-bottom: 14px;
-  ">18 ОКТЯБРЯ</div>
-
-  <h2 style="
-    font-size: clamp(22px, 4vw, 36px);
-    line-height: 1.3;
-    margin: 0 0 12px;
-  ">С ДНЁМ РОЖДЕНИЯ!</h2>
-
-  <div style="
-    color: #f36b2b;
-    font-size: clamp(19px, 3vw, 27px);
-    font-weight: 700;
-    margin-bottom: 8px;
-  ">ИВАН ФРОЛОВ</div>
-
-  <div style="color: #c5c5c8; font-size: 12px; margin-bottom: 20px;">
-    Инспектор хоккейных судей
-  </div>
-
-  <div style="
-    max-width: 650px;
-    margin: auto;
-    font-size: 13px;
-    line-height: 1.9;
-    color: #eeeeef;
+  <section id="birthdayGreeting" hidden style="
+    background:linear-gradient(135deg,#111113,#29272b);
+    color:#fff;
+    border:1px solid #f36b2b;
+    border-radius:22px;
+    padding:30px 24px;
+    margin:22px 0 28px;
+    text-align:center;
   ">
-    Желаем крепкого здоровья, благополучия, успехов в работе,
-    справедливых решений и новых достижений в хоккее!
-    Пусть каждый сезон приносит поводы для гордости,
-    а рядом всегда будет надёжная команда.
-  </div>
+    <div style="font-size:34px;margin-bottom:12px;">🎂</div>
 
-  <div style="
-    color: #f36b2b;
-    font-size: 10px;
-    letter-spacing: 3px;
-    margin-top: 24px;
-  ">REF HOCKEY</div>
-</section>
+    <div style="
+      color:#f36b2b;
+      font-size:11px;
+      letter-spacing:2px;
+      margin-bottom:14px;
+    ">18 ОКТЯБРЯ</div>
 
+    <h2 style="
+      font-size:clamp(22px,4vw,36px);
+      line-height:1.3;
+      margin:0 0 12px;
+    ">С ДНЁМ РОЖДЕНИЯ!</h2>
 
+    <div style="
+      color:#f36b2b;
+      font-size:clamp(19px,3vw,27px);
+      font-weight:700;
+      margin-bottom:8px;
+    ">ИВАН ФРОЛОВ</div>
 
-  <div
-    id="status"
-    class="status"
-  >
-    Загрузка...
-  </div>
+    <div style="color:#c5c5c8;font-size:12px;margin-bottom:20px;">
+      Инспектор хоккейных судей
+    </div>
 
+    <div style="
+      max-width:650px;
+      margin:auto;
+      font-size:13px;
+      line-height:1.9;
+      color:#eeeeef;
+    ">
+      Желаем крепкого здоровья, благополучия, успехов в работе,
+      справедливых решений и новых достижений в хоккее!
+      Пусть каждый сезон приносит поводы для гордости,
+      а рядом всегда будет надёжная команда.
+    </div>
 
-  <section
-    id="matches"
-    class="matches"
-  ></section>
+    <div style="
+      color:#f36b2b;
+      font-size:10px;
+      letter-spacing:3px;
+      margin-top:24px;
+    ">REF HOCKEY</div>
+  </section>
+
+  <div id="status" class="status">Загрузка...</div>
+
+  <section id="matches" class="matches"></section>
+
+  <section id="polls" class="polls hidden"></section>
 
 </main>
-
 
 <script src="config.js"></script>
 
 <script>
 
+"use strict";
+
+/* --------------------------------
+   РЕЖИМЫ СТРАНИЦЫ
+-------------------------------- */
+
+const params = new URLSearchParams(location.search);
+
+const archiveMode = params.get("archive") === "1";
+const pollsMode = params.get("polls") === "1";
+
+const statusBox = document.getElementById("status");
+const matchesBox = document.getElementById("matches");
+const pollsBox = document.getElementById("polls");
+const pageTitle = document.getElementById("pageTitle");
+const pageSubtitle = document.getElementById("pageSubtitle");
+
+/* --------------------------------
+   ДЕНЬ РОЖДЕНИЯ
+-------------------------------- */
 
 function updateBirthdayGreeting(){
-  const greeting = document.getElementById("birthdayGreeting");
+
+  const greeting =
+    document.getElementById("birthdayGreeting");
 
   if(!greeting) return;
 
   const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Moscow",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
+    timeZone:"Europe/Moscow",
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit"
   }).formatToParts(new Date());
 
   const dateParts = {};
@@ -171,71 +148,71 @@ function updateBirthdayGreeting(){
 }
 
 updateBirthdayGreeting();
-setInterval(updateBirthdayGreeting, 60000);
+setInterval(updateBirthdayGreeting,60000);
 
-  
-let archiveMode =
-  new URLSearchParams(location.search).get("archive") === "1";
-
+/* --------------------------------
+   НАВИГАЦИЯ
+-------------------------------- */
 
 function renderNavigation(){
 
-  const matchesTab =
-    document.getElementById("matchesTab");
+  document.getElementById("matchesTab")
+    .classList.toggle("active",!archiveMode && !pollsMode);
 
-  if(archiveMode){
+  document.getElementById("archiveTab")
+    .classList.toggle("active",archiveMode);
 
-    matchesTab.classList.remove("active");
+  document.getElementById("pollsTab")
+    .classList.toggle("active",pollsMode);
+
+  matchesBox.classList.toggle("hidden",pollsMode);
+  pollsBox.classList.toggle("hidden",!pollsMode);
+
+  if(pollsMode){
+
+    pageTitle.textContent = "ГОЛОСОВАНИЯ";
+    pageSubtitle.textContent =
+      "Выбор судей. Результаты доступны в реальном времени.";
+
+  }else if(archiveMode){
+
+    pageTitle.textContent = "АРХИВ МАТЧЕЙ";
+    pageSubtitle.textContent =
+      "Завершённые хоккейные матчи и судейские бригады.";
 
   }else{
 
-    matchesTab.classList.add("active");
+    pageTitle.textContent = "БЛИЖАЙШИЕ МАТЧИ";
+    pageSubtitle.textContent =
+      "Судейские бригады хоккейных матчей.";
 
   }
-
 }
 
+/* --------------------------------
+   МАТЧИ И АРХИВ
+-------------------------------- */
 
 async function loadMatches(){
 
-  const status =
-    document.getElementById("status");
-
-  const box =
-    document.getElementById("matches");
-
-  const title =
-    document.getElementById("pageTitle");
-
-
-  title.textContent =
-    archiveMode
-      ? "АРХИВ МАТЧЕЙ"
-      : "БЛИЖАЙШИЕ МАТЧИ";
-
-
   try{
 
-    const matches =
-      await api(
-        "matches?select=*&order=match_date.asc,match_time.asc"
-      );
+    const matches = await api(
+      "matches?select=*&order=match_date.asc,match_time.asc"
+    );
 
+    const filtered = matches.filter(match =>
+      archiveMode
+        ? isArchived(match)
+        : !isArchived(match)
+    );
 
-    const filtered =
-      matches.filter(match =>
-        archiveMode
-          ? isArchived(match)
-          : !isArchived(match)
-      );
-
-
-    status.textContent = "";
-
+    statusBox.className = "status";
+    statusBox.textContent = "";
 
     if(!filtered.length){
 
-      box.innerHTML = `
+      matchesBox.innerHTML = `
         <div class="empty">
           ${
             archiveMode
@@ -248,80 +225,542 @@ async function loadMatches(){
       return;
     }
 
+    matchesBox.innerHTML = filtered.map(match => `
 
-    box.innerHTML =
-      filtered.map(match => `
+      <article
+        class="match-card"
+        onclick="location.href='match.html?id=${encodeURIComponent(match.id)}'"
+      >
 
-        <article
-          class="match-card"
-          onclick="location.href='match.html?id=${match.id}'"
-        >
+        <div class="match-date">
+          ${esc(formatDateWithWeekday(match.match_date))}
+        </div>
 
-          <div class="match-date">
+        <div class="teams">
+          ${esc(match.team1)}
+          —
+          ${esc(match.team2)}
+        </div>
 
-            ${esc(
-              formatDateWithWeekday(match.match_date)
-            )}
+        <div class="match-meta">
+          ${match.match_time ? esc(match.match_time) : ""}
+          ${match.place ? `<br>${esc(match.place)}` : ""}
+        </div>
 
-          </div>
+      </article>
 
-
-          <div class="teams">
-
-            ${esc(match.team1)}
-            —
-            ${esc(match.team2)}
-
-          </div>
-
-
-          <div class="match-meta">
-
-            ${
-              match.match_time
-                ? esc(match.match_time)
-                : ""
-            }
-
-            ${
-              match.place
-                ? `<br>${esc(match.place)}`
-                : ""
-            }
-
-          </div>
-
-        </article>
-
-      `).join("");
+    `).join("");
 
   }catch(error){
 
-    status.className =
-      "status error";
+    statusBox.className = "status error";
+    statusBox.textContent =
+      "Ошибка загрузки: " + error.message;
 
-    status.textContent =
-      "Ошибка загрузки: " +
-      error.message;
+  }
+}
+
+/* --------------------------------
+   ФОРМАТИРОВАНИЕ ДАТЫ ГОЛОСОВАНИЯ
+-------------------------------- */
+
+function formatPollDeadline(value){
+
+  if(!value) return "Не указано";
+
+  const date = new Date(value);
+
+  if(Number.isNaN(date.getTime())){
+    return "Не удалось определить дату";
+  }
+
+  return new Intl.DateTimeFormat("ru-RU",{
+    timeZone:"Europe/Moscow",
+    day:"2-digit",
+    month:"long",
+    year:"numeric",
+    hour:"2-digit",
+    minute:"2-digit"
+  }).format(date) + " МСК";
+}
+
+/* --------------------------------
+   ЗАГРУЗКА ГОЛОСОВАНИЙ
+-------------------------------- */
+
+async function loadPolls(){
+
+  statusBox.className = "status";
+  statusBox.textContent = "Загрузка голосований...";
+  pollsBox.innerHTML = "";
+
+  try{
+
+    const polls = await api(
+      "polls?select=*&is_published=eq.true&order=created_at.desc"
+    );
+
+    if(!polls || !polls.length){
+
+      statusBox.textContent = "";
+
+      pollsBox.innerHTML = `
+        <div class="empty">
+          Опубликованных голосований пока нет.
+        </div>
+      `;
+
+      return;
+    }
+
+    const referees = await api(
+      "referees?select=id,name&order=name.asc"
+    );
+
+    const refereeNames = new Map(
+      referees.map(referee => [
+        String(referee.id),
+        referee.name
+      ])
+    );
+
+    const pollData = await Promise.all(
+      polls.map(async poll => {
+
+        const [options,votes] = await Promise.all([
+
+          api(
+            "poll_options?select=id,poll_id,label,option_date,games_count,is_unavailable" +
+            "&poll_id=eq." + encodeURIComponent(poll.id) +
+            "&order=created_at.asc"
+          ),
+
+          api(
+            "poll_votes?select=referee_id,option_id,updated_at" +
+            "&poll_id=eq." + encodeURIComponent(poll.id)
+          )
+
+        ]);
+
+        return {
+          poll,
+          options:options || [],
+          votes:votes || []
+        };
+
+      })
+    );
+
+    statusBox.textContent = "";
+
+    pollsBox.innerHTML = pollData.map(data =>
+      renderPoll(data,refereeNames)
+    ).join("");
+
+  }catch(error){
+
+    statusBox.className = "status error";
+    statusBox.textContent =
+      "Ошибка загрузки голосований: " + error.message;
+
+    pollsBox.innerHTML = `
+      <div class="empty">
+        Не удалось загрузить голосования.
+      </div>
+    `;
+
+  }
+}
+
+/* --------------------------------
+   ОТРИСОВКА ОДНОГО ГОЛОСОВАНИЯ
+-------------------------------- */
+
+function renderPoll(data,refereeNames){
+
+  const poll = data.poll;
+  const options = data.options;
+  const votes = data.votes;
+
+  const closed =
+    !poll.closes_at ||
+    new Date(poll.closes_at).getTime() <= Date.now();
+
+  const totalVotes = votes.length;
+
+  const votersByOption = new Map();
+
+  options.forEach(option => {
+    votersByOption.set(String(option.id),[]);
+  });
+
+  votes.forEach(vote => {
+
+    const key = String(vote.option_id);
+
+    if(!votersByOption.has(key)){
+      votersByOption.set(key,[]);
+    }
+
+    const name =
+      refereeNames.get(String(vote.referee_id)) ||
+      "Судья";
+
+    votersByOption.get(key).push(name);
+
+  });
+
+  const optionsHTML = options.map(option => {
+
+    const optionVotes = votes.filter(
+      vote => String(vote.option_id) === String(option.id)
+    );
+
+    const count = optionVotes.length;
+
+    const percent = totalVotes
+      ? Math.round(count / totalVotes * 100)
+      : 0;
+
+    const voters = (votersByOption.get(String(option.id)) || [])
+      .sort((a,b) => a.localeCompare(b,"ru"));
+
+    const details = [];
+
+    if(option.option_date){
+
+      const date = new Date(
+        option.option_date + "T00:00:00"
+      );
+
+      if(!Number.isNaN(date.getTime())){
+
+        details.push(
+          new Intl.DateTimeFormat("ru-RU",{
+            day:"2-digit",
+            month:"long"
+          }).format(date)
+        );
+
+      }
+
+    }
+
+    if(Number(option.games_count) > 0){
+
+      details.push(
+        option.games_count + " " +
+        getGamesWord(Number(option.games_count))
+      );
+
+    }
+
+    return `
+
+      <div class="poll-option">
+
+        <div class="poll-option-top">
+
+          <div class="poll-option-name">
+            ${esc(option.label)}
+          </div>
+
+          <div class="poll-option-count">
+            ${count} · ${percent}%
+          </div>
+
+        </div>
+
+        ${
+          details.length
+            ? `<div class="poll-option-details">${details.map(esc).join(" · ")}</div>`
+            : ""
+        }
+
+        <div class="poll-progress">
+          <div
+            class="poll-progress-fill"
+            style="width:${percent}%"
+          ></div>
+        </div>
+
+        <div class="poll-voters">
+
+          ${
+            voters.length
+              ? voters.map(name => `
+                  <span class="poll-voter">
+                    ${esc(name)}
+                  </span>
+                `).join("")
+              : `<span class="poll-no-voters">Пока никто не выбрал этот вариант</span>`
+          }
+
+        </div>
+
+        ${
+          !closed
+            ? `
+              <label class="poll-choice">
+                <input
+                  type="radio"
+                  name="poll_option_${esc(poll.id)}"
+                  value="${esc(option.id)}"
+                  required
+                >
+                <span>Выбрать этот вариант</span>
+              </label>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  }).join("");
+
+  return `
+
+    <article class="poll-card">
+
+      <div class="poll-card-head">
+
+        <div class="poll-status ${closed ? "closed" : "open"}">
+          ${closed ? "ЗАВЕРШЕНО" : "ИДЁТ ГОЛОСОВАНИЕ"}
+        </div>
+
+        <div class="poll-deadline">
+          ${closed ? "Завершено" : "Завершится"}:
+          ${esc(formatPollDeadline(poll.closes_at))}
+        </div>
+
+      </div>
+
+      <h2 class="poll-title">
+        ${esc(poll.title)}
+      </h2>
+
+      ${
+        poll.description
+          ? `<div class="poll-description">${esc(poll.description)}</div>`
+          : ""
+      }
+
+      <div class="poll-total">
+        <strong>${totalVotes}</strong>
+        <span>${getVotersWord(totalVotes)}</span>
+      </div>
+
+      <div class="poll-options">
+        ${
+          options.length
+            ? optionsHTML
+            : `<div class="poll-no-options">Варианты голосования не добавлены.</div>`
+        }
+      </div>
+
+      ${
+        !closed && options.length
+          ? `
+            <form
+              class="poll-vote-form"
+              onsubmit="submitPollVote(event,${Number(poll.id)})"
+            >
+
+              <div class="poll-form-title">
+                ОТДАТЬ ГОЛОС
+              </div>
+
+              <div class="poll-form-grid">
+
+                <div>
+                  <label for="poll_login_${esc(poll.id)}">
+                    Логин судьи
+                  </label>
+
+                  <input
+                    id="poll_login_${esc(poll.id)}"
+                    name="login"
+                    type="text"
+                    maxlength="4"
+                    minlength="4"
+                    pattern="[A-Za-z]{2}[0-9]{2}"
+                    placeholder="Например, XJ70"
+                    autocomplete="off"
+                    required
+                  >
+                </div>
+
+                <div>
+                  <label for="poll_comment_${esc(poll.id)}">
+                    Комментарий (необязательно)
+                  </label>
+
+                  <input
+                    id="poll_comment_${esc(poll.id)}"
+                    name="comment"
+                    type="text"
+                    maxlength="1000"
+                    placeholder="Ваш комментарий"
+                  >
+                </div>
+
+              </div>
+
+              <button class="btn poll-submit" type="submit">
+                ПРОГОЛОСОВАТЬ
+              </button>
+
+              <div class="poll-form-note">
+                Голос можно изменить до окончания голосования.
+              </div>
+
+            </form>
+          `
+          : `
+            <div class="poll-closed-note">
+              Голосование завершено. Просмотр результатов доступен.
+            </div>
+          `
+      }
+
+    </article>
+
+  `;
+
+}
+
+/* --------------------------------
+   СЛОВОФОРМЫ
+-------------------------------- */
+
+function getVotersWord(number){
+
+  const n = Math.abs(number) % 100;
+  const last = n % 10;
+
+  if(n > 10 && n < 20) return "проголосовавших";
+  if(last === 1) return "проголосовавший";
+  if(last >= 2 && last <= 4) return "проголосовавших";
+
+  return "проголосовавших";
+}
+
+function getGamesWord(number){
+
+  const n = Math.abs(number) % 100;
+  const last = n % 10;
+
+  if(n > 10 && n < 20) return "игр";
+  if(last === 1) return "игра";
+  if(last >= 2 && last <= 4) return "игры";
+
+  return "игр";
+}
+
+/* --------------------------------
+   ОТПРАВКА ГОЛОСА
+-------------------------------- */
+
+async function submitPollVote(event,pollId){
+
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const button = form.querySelector("button[type='submit']");
+
+  const login = form.elements.login.value
+    .trim()
+    .toUpperCase();
+
+  const comment = form.elements.comment.value.trim();
+
+  const selected = document.querySelector(
+    `input[name="poll_option_${pollId}"]:checked`
+  );
+
+  if(!/^[A-Z]{2}[0-9]{2}$/.test(login)){
+
+    alert("Введите корректный логин судьи из двух букв и двух цифр.");
+    return;
+
+  }
+
+  if(!selected){
+
+    alert("Сначала выберите вариант голосования.");
+    return;
+
+  }
+
+  button.disabled = true;
+  button.textContent = "ОТПРАВКА...";
+
+  try{
+
+    const result = await api("rpc/cast_poll_vote",{
+      method:"POST",
+      body:JSON.stringify({
+
+        p_login:login,
+        p_poll_id:Number(pollId),
+        p_option_id:Number(selected.value),
+        p_comment:comment || null
+
+      })
+    });
+
+    if(result && result.success === false){
+
+      throw new Error(
+        result.message || "Не удалось сохранить голос."
+      );
+
+    }
+
+    await loadPolls();
+
+    statusBox.className = "status ok";
+    statusBox.textContent =
+      result && result.message
+        ? result.message
+        : "Ваш голос успешно сохранён.";
+
+  }catch(error){
+
+    statusBox.className = "status error";
+    statusBox.textContent =
+      "Не удалось проголосовать: " + error.message;
+
+    button.disabled = false;
+    button.textContent = "ПРОГОЛОСОВАТЬ";
 
   }
 
 }
 
+/* --------------------------------
+   ЗАПУСК
+-------------------------------- */
 
 renderNavigation();
-loadMatches();
 
+if(pollsMode){
 
-// Автоматически проверяем время
-// каждые 30 секунд.
-// Поэтому матч попадёт в архив практически
-// сразу после наступления времени.
+  loadPolls();
 
-setInterval(loadMatches,30000);
+}else{
+
+  loadMatches();
+
+  // Проверка времени для автоматического
+  // переноса матчей в архив.
+  setInterval(loadMatches,30000);
+
+}
 
 </script>
 
 </body>
-
 </html>
