@@ -1,342 +1,306 @@
+
 <!doctype html>
 <html lang="ru">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Админка — REF HOCKEY</title>
+<link rel="stylesheet" href="style.css?v=5">
 
-<link rel="stylesheet" href="style.css?v=4">
-
+<style>
+.admin-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:20px 0;
+}
+.admin-tabs button{
+  border:0;
+  background:#e9e9eb;
+  padding:13px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  font:inherit;
+  font-size:10px;
+}
+.admin-tabs button.active{
+  background:var(--orange);
+  color:white;
+}
+.admin-section{display:none}
+.admin-section.active{display:block}
+.option-editor{
+  border:1px solid #eee;
+  border-radius:14px;
+  padding:14px;
+  margin:12px 0;
+}
+.option-editor-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  font-size:11px;
+  font-weight:600;
+}
+.option-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.poll-admin-card{
+  border:1px solid #eee;
+  border-radius:16px;
+  padding:17px;
+  margin-bottom:12px;
+}
+.poll-admin-card h3{
+  margin:0 0 8px;
+  font-size:14px;
+}
+.poll-admin-meta{
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.9;
+}
+.poll-admin-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:13px;
+}
+.poll-result-option{
+  padding:12px;
+  border:1px solid #eee;
+  border-radius:12px;
+  margin:8px 0;
+  font-size:11px;
+}
+.poll-result-vote{
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+  font-size:10px;
+  line-height:1.8;
+}
+.poll-result-vote:last-child{border-bottom:0}
+.remove-option{
+  background:#f3e5e2;
+  color:#a33;
+  border:0;
+  border-radius:8px;
+  padding:7px 10px;
+  cursor:pointer;
+}
+.poll-status{
+  display:inline-block;
+  padding:6px 9px;
+  border-radius:7px;
+  background:#eee;
+  font-size:9px;
+  margin-top:8px;
+}
+.poll-status.open{
+  background:#e1f3e8;
+  color:#16804b;
+}
+.poll-status.closed{
+  background:#f5e4e1;
+  color:#b33;
+}
+@media(max-width:600px){
+  .option-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
 
 <body>
 
 <header class="top">
-
   <div class="top-inner">
-
-    <a class="logo" href="index.html">
-      REF HOCKEY
-    </a>
-
+    <a class="logo" href="index.html">REF HOCKEY</a>
     <nav class="nav">
-
-      <a href="index.html">
-        Матчи
-      </a>
-
-      <a href="index.html?archive=1">
-        Архив
-      </a>
-
-      <a
-        class="active"
-        href="admin.html"
-      >
-        Админка
-      </a>
-
+      <a href="index.html">Матчи</a>
+      <a href="index.html?archive=1">Архив</a>
+      <a class="active" href="admin.html">Админка</a>
     </nav>
-
   </div>
-
 </header>
-
 
 <main class="wrap">
 
+<!-- LOGIN -->
 
-<!-- ================= LOGIN ================= -->
-
-<section
-  id="loginScreen"
-  class="auth-box"
->
-
+<section id="loginScreen" class="auth-box">
   <div class="panel auth-panel">
-
-    <h1>
-      ВХОД В АДМИНКУ
-    </h1>
+    <h1>ВХОД В АДМИНКУ</h1>
 
     <form id="loginForm">
+      <label>EMAIL</label>
+      <input id="loginEmail" type="email" required placeholder="admin@email.com">
 
-      <label>
-        EMAIL
-      </label>
+      <label>ПАРОЛЬ</label>
+      <input id="loginPassword" type="password" required placeholder="••••••••">
 
-      <input
-        id="loginEmail"
-        type="email"
-        required
-        placeholder="admin@email.com"
-      >
-
-
-      <label>
-        ПАРОЛЬ
-      </label>
-
-      <input
-        id="loginPassword"
-        type="password"
-        required
-        placeholder="••••••••"
-      >
-
-
-      <button
-        class="btn"
-        type="submit"
-      >
-        ВОЙТИ
-      </button>
-
+      <button class="btn" type="submit">ВОЙТИ</button>
     </form>
 
-
-    <div
-      id="loginStatus"
-      class="status"
-    ></div>
-
+    <div id="loginStatus" class="status"></div>
   </div>
-
 </section>
 
+<!-- ADMIN -->
 
-<!-- ================= ADMIN ================= -->
-
-<section
-  id="adminScreen"
-  class="hidden"
->
+<section id="adminScreen" class="hidden">
 
   <div class="admin-head">
-
-    <h1 class="section-title">
-      АДМИНКА
-    </h1>
-
-    <button
-      id="logoutButton"
-      class="btn dark"
-    >
-      ВЫЙТИ
-    </button>
-
+    <h1 class="section-title">АДМИНКА</h1>
+    <button id="logoutButton" class="btn dark">ВЫЙТИ</button>
   </div>
 
+  <div class="admin-tabs">
+    <button class="active" data-tab="matchesSection">МАТЧИ</button>
+    <button data-tab="refereesSection">РЕЕСТР СУДЕЙ</button>
+    <button data-tab="pollsSection">ГОЛОСОВАНИЯ</button>
+  </div>
 
-  <div class="admin-grid">
+  <!-- MATCHES -->
 
+  <section id="matchesSection" class="admin-section active">
 
-    <!-- ===== REFEREES ===== -->
+    <div class="panel">
+      <h2 id="matchFormTitle">ДОБАВИТЬ МАТЧ</h2>
 
-    <section class="panel">
+      <form id="matchForm">
+        <div class="form-grid">
 
-      <h2>
-        РЕЕСТР СУДЕЙ
-      </h2>
+          <div>
+            <label>КОМАНДА 1</label>
+            <input id="team1" required placeholder="Челны">
+          </div>
 
+          <div>
+            <label>КОМАНДА 2</label>
+            <input id="team2" required placeholder="Нефтяник">
+          </div>
+
+          <div>
+            <label>ДАТА</label>
+            <input id="date" type="date" required>
+            <div id="weekday" class="date-weekday"></div>
+          </div>
+
+          <div>
+            <label>ВРЕМЯ</label>
+            <input id="time" type="time">
+          </div>
+
+          <div class="full">
+            <label>МЕСТО</label>
+            <input id="place" placeholder="Лд Основной">
+          </div>
+
+          <div id="refFields" class="full"></div>
+
+          <div class="full form-buttons">
+            <button id="saveMatchButton" class="btn" type="submit">ДОБАВИТЬ МАТЧ</button>
+            <button id="cancelEditButton" class="btn dark hidden" type="button">ОТМЕНА</button>
+          </div>
+
+        </div>
+      </form>
+
+      <div id="matchStatus" class="status"></div>
+    </div>
+
+    <section class="panel" style="margin-top:20px">
+      <h2>МАТЧИ</h2>
+      <div id="matchList" class="list"></div>
+    </section>
+
+  </section>
+
+  <!-- REFEREES -->
+
+  <section id="refereesSection" class="admin-section">
+
+    <div class="panel">
+      <h2>РЕЕСТР СУДЕЙ</h2>
 
       <form id="refForm">
+        <label>ФИО СУДЬИ</label>
+        <input id="refName" required placeholder="Иванов Иван Иванович">
+        <br><br>
+        <button class="btn" type="submit">ДОБАВИТЬ СУДЬЮ</button>
+      </form>
 
-        <label>
-          ФИО СУДЬИ
-        </label>
+      <div id="refStatus" class="status"></div>
+      <div id="refList" class="list"></div>
+    </div>
 
-        <input
-          id="refName"
-          required
-          placeholder="Иванов Иван Иванович"
-        >
+  </section>
 
+  <!-- POLLS -->
+
+  <section id="pollsSection" class="admin-section">
+
+    <div class="panel">
+
+      <h2>СОЗДАТЬ ГОЛОСОВАНИЕ</h2>
+
+      <form id="pollForm">
+
+        <label>НАЗВАНИЕ ГОЛОСОВАНИЯ</label>
+        <input id="pollTitle" required maxlength="150" placeholder="Например: Детские игры">
 
         <br><br>
 
+        <label>ОПИСАНИЕ (НЕОБЯЗАТЕЛЬНО)</label>
+        <input id="pollDescription" maxlength="500" placeholder="Дополнительная информация">
 
-        <button
-          class="btn"
-          type="submit"
-        >
-          ДОБАВИТЬ СУДЬЮ
+        <br><br>
+
+        <label>ДАТА И ВРЕМЯ ОКОНЧАНИЯ — МОСКВА</label>
+        <input id="pollDeadline" type="datetime-local" required>
+
+        <div class="status">
+          Время окончания вводится по Москве (UTC+3).
+        </div>
+
+        <div class="divider" style="height:1px;background:#eee;margin:22px 0"></div>
+
+        <h2 style="font-size:15px">ВАРИАНТЫ ОТВЕТА</h2>
+
+        <div id="pollOptionsEditor"></div>
+
+        <button id="addPollOption" class="btn dark" type="button">
+          + ДОБАВИТЬ ВАРИАНТ
+        </button>
+
+        <div class="status">
+          Вариант «Не смогу / пропускаю» создаётся автоматически.
+        </div>
+
+        <br>
+
+        <button id="createPollButton" class="btn" type="submit">
+          СОЗДАТЬ И ОПУБЛИКОВАТЬ
         </button>
 
       </form>
 
+      <div id="pollStatus" class="status"></div>
 
-      <div
-        id="refStatus"
-        class="status"
-      ></div>
+    </div>
 
-
-      <div
-        id="refList"
-        class="list"
-      ></div>
-
+    <section class="panel" style="margin-top:20px">
+      <h2>СОЗДАННЫЕ ГОЛОСОВАНИЯ</h2>
+      <div id="pollList" class="list"></div>
     </section>
 
-
-    <!-- ===== MATCH ===== -->
-
-    <section class="panel">
-
-      <h2 id="matchFormTitle">
-        ДОБАВИТЬ МАТЧ
-      </h2>
-
-
-      <form id="matchForm">
-
-        <div class="form-grid">
-
-
-          <div>
-
-            <label>
-              КОМАНДА 1
-            </label>
-
-            <input
-              id="team1"
-              required
-              placeholder="Челны"
-            >
-
-          </div>
-
-
-          <div>
-
-            <label>
-              КОМАНДА 2
-            </label>
-
-            <input
-              id="team2"
-              required
-              placeholder="Нефтяник"
-            >
-
-          </div>
-
-
-          <div>
-
-            <label>
-              ДАТА
-            </label>
-
-            <input
-              id="date"
-              type="date"
-              required
-            >
-
-            <div
-              id="weekday"
-              class="date-weekday"
-            ></div>
-
-          </div>
-
-
-          <div>
-
-            <label>
-              ВРЕМЯ
-            </label>
-
-            <input
-              id="time"
-              type="time"
-            >
-
-          </div>
-
-
-          <div class="full">
-
-            <label>
-              МЕСТО
-            </label>
-
-            <input
-              id="place"
-              placeholder="Лд Основной"
-            >
-
-          </div>
-
-
-          <div
-            id="refFields"
-            class="full"
-          ></div>
-
-
-          <div class="full form-buttons">
-
-            <button
-              id="saveMatchButton"
-              class="btn"
-              type="submit"
-            >
-              ДОБАВИТЬ МАТЧ
-            </button>
-
-
-            <button
-              id="cancelEditButton"
-              class="btn dark hidden"
-              type="button"
-            >
-              ОТМЕНА
-            </button>
-
-          </div>
-
-        </div>
-
-      </form>
-
-
-      <div
-        id="matchStatus"
-        class="status"
-      ></div>
-
+    <section id="pollDetails" class="panel hidden" style="margin-top:20px">
+      <h2 id="pollDetailsTitle">РЕЗУЛЬТАТЫ</h2>
+      <div id="pollDetailsContent"></div>
     </section>
-
-  </div>
-
-
-  <!-- ===== MATCH LIST ===== -->
-
-  <section
-    class="panel"
-    style="margin-top:20px"
-  >
-
-    <h2>
-      МАТЧИ
-    </h2>
-
-
-    <div
-      id="matchList"
-      class="list"
-    ></div>
 
   </section>
 
@@ -344,790 +308,608 @@
 
 </main>
 
-
 <script src="config.js"></script>
 
 <script>
+"use strict";
 
 const roleFields = [
-
   ["Главный судья","ref1"],
-
   ["Главный судья","ref2"],
-
   ["Линейный судья","line1"],
-
   ["Линейный судья","line2"],
-
   ["Секретарь матча","secretary"],
-
   ["Информатор","announcer"],
-
   ["Судья при оштрафованных","penalty1"],
-
   ["Судья при оштрафованных","penalty2"],
-
   ["Судья за воротами","goal1"],
-
   ["Судья за воротами","goal2"]
-
 ];
 
-
 let referees = [];
-
 let editingMatchId = null;
+let pollOptionCounter = 0;
 
+const $ = id => document.getElementById(id);
 
-/* ================= AUTH ================= */
-
+/* AUTH */
 
 function showAdmin(){
-
-  document
-    .getElementById("loginScreen")
-    .classList.add("hidden");
-
-  document
-    .getElementById("adminScreen")
-    .classList.remove("hidden");
-
+  $("loginScreen").classList.add("hidden");
+  $("adminScreen").classList.remove("hidden");
 }
-
 
 function showLogin(){
-
-  document
-    .getElementById("loginScreen")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("adminScreen")
-    .classList.add("hidden");
-
+  $("loginScreen").classList.remove("hidden");
+  $("adminScreen").classList.add("hidden");
 }
 
+$("loginForm").addEventListener("submit",async event=>{
+  event.preventDefault();
 
-document
-  .getElementById("loginForm")
-  .addEventListener("submit",async event=>{
+  $("loginStatus").className = "status";
+  $("loginStatus").textContent = "Вход...";
 
-    event.preventDefault();
+  try{
+    await login($("loginEmail").value.trim(),$("loginPassword").value);
+    showAdmin();
+    await loadRefs();
+    await loadMatches();
+    await loadPolls();
+  }catch(error){
+    $("loginStatus").className = "status error";
+    $("loginStatus").textContent = error.message;
+  }
+});
 
+$("logoutButton").addEventListener("click",async()=>{
+  await logout();
+  showLogin();
+});
 
-    const status =
-      document.getElementById("loginStatus");
+/* ADMIN TABS */
 
+document.querySelectorAll(".admin-tabs button").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelectorAll(".admin-tabs button").forEach(item=>item.classList.remove("active"));
+    document.querySelectorAll(".admin-section").forEach(item=>item.classList.remove("active"));
 
-    status.className =
-      "status";
+    button.classList.add("active");
+    $(button.dataset.tab).classList.add("active");
 
-    status.textContent =
-      "Вход...";
-
-
-    try{
-
-      await login(
-
-        document
-          .getElementById("loginEmail")
-          .value
-          .trim(),
-
-        document
-          .getElementById("loginPassword")
-          .value
-
-      );
-
-
-      showAdmin();
-
-
-      await loadRefs();
-      await loadMatches();
-
-
-    }catch(error){
-
-      status.className =
-        "status error";
-
-      status.textContent =
-        error.message;
-
-    }
-
+    if(button.dataset.tab === "pollsSection") loadPolls();
   });
+});
 
-
-document
-  .getElementById("logoutButton")
-  .addEventListener("click",async()=>{
-
-    await logout();
-
-    showLogin();
-
-  });
-
-
-/* ================= REFEREES ================= */
-
+/* REFEREES */
 
 function renderRefFields(){
-
-  document
-    .getElementById("refFields")
-    .innerHTML =
-
-      roleFields.map(
-        ([label,key])=>`
-
-          <div style="margin-bottom:10px">
-
-            <label>
-              ${esc(label)}
-            </label>
-
-            <select id="${key}">
-
-              <option value="">
-                — не назначен —
-              </option>
-
-              ${
-                referees.map(referee=>`
-
-                  <option value="${referee.id}">
-                    ${esc(referee.name)}
-                  </option>
-
-                `).join("")
-              }
-
-            </select>
-
-          </div>
-
-        `
-      ).join("");
-
+  $("refFields").innerHTML = roleFields.map(([label,key])=>`
+    <div style="margin-bottom:10px">
+      <label>${esc(label)}</label>
+      <select id="${key}">
+        <option value="">— не назначен —</option>
+        ${referees.map(referee=>`
+          <option value="${referee.id}">${esc(referee.name)}</option>
+        `).join("")}
+      </select>
+    </div>
+  `).join("");
 }
-
 
 async function loadRefs(){
+  referees = await api("referees?select=id,name,login&order=name.asc");
 
-  referees =
-    await api(
-      "referees?select=id,name&order=name.asc"
-    );
-
-
-  document
-    .getElementById("refList")
-    .innerHTML =
-
-      referees.length
-
-        ? referees.map(referee=>`
-
-            <div class="list-item">
-
-              <span>
-                ${esc(referee.name)}
-              </span>
-
-              <button
-                class="small-btn"
-                onclick="deleteRef(${referee.id})"
-              >
-                Удалить
-              </button>
-
-            </div>
-
-          `).join("")
-
-        : `
-          <div class="empty">
-            Реестр пуст.
-          </div>
-        `;
-
+  $("refList").innerHTML = referees.length
+    ? referees.map(referee=>`
+      <div class="list-item">
+        <span>
+          <b>${esc(referee.name)}</b><br>
+          <small>ЛОГИН: ${esc(referee.login || "—")}</small>
+        </span>
+        <button class="small-btn" onclick="deleteRef(${Number(referee.id)})">Удалить</button>
+      </div>
+    `).join("")
+    : `<div class="empty">Реестр пуст.</div>`;
 
   renderRefFields();
-
 }
-
 
 async function deleteRef(id){
-
-  if(
-    !confirm(
-      "Удалить судью из реестра?"
-    )
-  ) return;
-
+  if(!confirm("Удалить судью из реестра?")) return;
 
   try{
+    await api(`referees?id=eq.${id}`,{method:"DELETE"});
+    await loadRefs();
+  }catch(error){
+    alert("Ошибка: "+error.message);
+  }
+}
 
-    await api(
-      `referees?id=eq.${id}`,
-      {
-        method:"DELETE"
-      }
-    );
+$("refForm").addEventListener("submit",async event=>{
+  event.preventDefault();
 
+  try{
+    await api("referees",{
+      method:"POST",
+      headers:{"Prefer":"return=minimal"},
+      body:JSON.stringify({name:$("refName").value.trim()})
+    });
 
+    $("refName").value = "";
+    $("refStatus").className = "status ok";
+    $("refStatus").textContent = "Судья добавлен. Логин назначен автоматически.";
     await loadRefs();
 
-
   }catch(error){
-
-    alert(
-      "Ошибка: " +
-      error.message
-    );
-
+    $("refStatus").className = "status error";
+    $("refStatus").textContent = "Ошибка: "+error.message;
   }
+});
 
-}
+/* MATCHES */
 
-
-document
-  .getElementById("refForm")
-  .addEventListener("submit",async event=>{
-
-    event.preventDefault();
-
-
-    const status =
-      document.getElementById("refStatus");
-
-
-    try{
-
-      await api(
-        "referees",
-        {
-          method:"POST",
-
-          headers:{
-            "Prefer":"return=minimal"
-          },
-
-          body:JSON.stringify({
-
-            name:
-              document
-                .getElementById("refName")
-                .value
-                .trim()
-
-          })
-
-        }
-      );
-
-
-      document
-        .getElementById("refName")
-        .value = "";
-
-
-      status.className =
-        "status ok";
-
-      status.textContent =
-        "Судья добавлен.";
-
-
-      await loadRefs();
-
-
-    }catch(error){
-
-      status.className =
-        "status error";
-
-      status.textContent =
-        "Ошибка: " +
-        error.message;
-
-    }
-
-  });
-
-
-/* ================= WEEKDAY ================= */
-
-
-document
-  .getElementById("date")
-  .addEventListener("change",()=>{
-
-    const date =
-      document
-        .getElementById("date")
-        .value;
-
-
-    document
-      .getElementById("weekday")
-      .textContent =
-        date
-          ? getWeekday(date)
-          : "";
-
-  });
-
-
-/* ================= MATCH FORM ================= */
-
+$("date").addEventListener("change",()=>{
+  $("weekday").textContent = $("date").value ? getWeekday($("date").value) : "";
+});
 
 function resetMatchForm(){
-
   editingMatchId = null;
-
-
-  document
-    .getElementById("matchForm")
-    .reset();
-
-
-  document
-    .getElementById("matchFormTitle")
-    .textContent =
-      "ДОБАВИТЬ МАТЧ";
-
-
-  document
-    .getElementById("saveMatchButton")
-    .textContent =
-      "ДОБАВИТЬ МАТЧ";
-
-
-  document
-    .getElementById("cancelEditButton")
-    .classList.add("hidden");
-
-
-  document
-    .getElementById("weekday")
-    .textContent = "";
-
-
+  $("matchForm").reset();
+  $("matchFormTitle").textContent = "ДОБАВИТЬ МАТЧ";
+  $("saveMatchButton").textContent = "ДОБАВИТЬ МАТЧ";
+  $("cancelEditButton").classList.add("hidden");
+  $("weekday").textContent = "";
   renderRefFields();
-
 }
-
 
 function editMatch(match){
+  editingMatchId = match.id;
 
-  editingMatchId =
-    match.id;
+  $("matchFormTitle").textContent = "РЕДАКТИРОВАТЬ МАТЧ";
+  $("saveMatchButton").textContent = "СОХРАНИТЬ ИЗМЕНЕНИЯ";
+  $("cancelEditButton").classList.remove("hidden");
 
-
-  document
-    .getElementById("matchFormTitle")
-    .textContent =
-      "РЕДАКТИРОВАТЬ МАТЧ";
-
-
-  document
-    .getElementById("saveMatchButton")
-    .textContent =
-      "СОХРАНИТЬ ИЗМЕНЕНИЯ";
-
-
-  document
-    .getElementById("cancelEditButton")
-    .classList.remove("hidden");
-
-
-  document
-    .getElementById("team1")
-    .value =
-      match.team1 || "";
-
-
-  document
-    .getElementById("team2")
-    .value =
-      match.team2 || "";
-
-
-  document
-    .getElementById("date")
-    .value =
-      match.match_date || "";
-
-
-  document
-    .getElementById("time")
-    .value =
-      match.match_time || "";
-
-
-  document
-    .getElementById("place")
-    .value =
-      match.place || "";
-
-
-  document
-    .getElementById("weekday")
-    .textContent =
-      match.match_date
-        ? getWeekday(match.match_date)
-        : "";
-
+  $("team1").value = match.team1 || "";
+  $("team2").value = match.team2 || "";
+  $("date").value = match.match_date || "";
+  $("time").value = match.match_time || "";
+  $("place").value = match.place || "";
+  $("weekday").textContent = match.match_date ? getWeekday(match.match_date) : "";
 
   roleFields.forEach(([,key])=>{
-
-    const select =
-      document.getElementById(key);
-
-
-    if(select){
-
-      select.value =
-        match[key]
-          ? String(match[key])
-          : "";
-
-    }
-
+    const select = $(key);
+    if(select) select.value = match[key] ? String(match[key]) : "";
   });
 
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
+$("cancelEditButton").addEventListener("click",resetMatchForm);
 
-document
-  .getElementById("cancelEditButton")
-  .addEventListener(
-    "click",
-    resetMatchForm
-  );
+$("matchForm").addEventListener("submit",async event=>{
+  event.preventDefault();
 
+  const status = $("matchStatus");
 
-document
-  .getElementById("matchForm")
-  .addEventListener("submit",async event=>{
+  const data = {
+    team1:$("team1").value.trim(),
+    team2:$("team2").value.trim(),
+    match_date:$("date").value || null,
+    match_time:$("time").value || null,
+    place:$("place").value.trim() || null
+  };
 
-    event.preventDefault();
-
-
-    const status =
-      document
-        .getElementById("matchStatus");
-
-
-    const data = {
-
-      team1:
-        document
-          .getElementById("team1")
-          .value
-          .trim(),
-
-      team2:
-        document
-          .getElementById("team2")
-          .value
-          .trim(),
-
-      match_date:
-        document
-          .getElementById("date")
-          .value ||
-        null,
-
-      match_time:
-        document
-          .getElementById("time")
-          .value ||
-        null,
-
-      place:
-        document
-          .getElementById("place")
-          .value
-          .trim() ||
-        null
-
-    };
-
-
-    roleFields.forEach(([,key])=>{
-
-      const value =
-        document
-          .getElementById(key)
-          ?.value;
-
-
-      data[key] =
-        value
-          ? Number(value)
-          : null;
-
-    });
-
-
-    try{
-
-      if(editingMatchId){
-
-        await api(
-          `matches?id=eq.${editingMatchId}`,
-          {
-            method:"PATCH",
-
-            headers:{
-              "Prefer":"return=minimal"
-            },
-
-            body:JSON.stringify(data)
-
-          }
-        );
-
-
-        status.className =
-          "status ok";
-
-        status.textContent =
-          "Матч изменён.";
-
-      }else{
-
-        await api(
-          "matches",
-          {
-            method:"POST",
-
-            headers:{
-              "Prefer":"return=minimal"
-            },
-
-            body:JSON.stringify(data)
-
-          }
-        );
-
-
-        status.className =
-          "status ok";
-
-        status.textContent =
-          "Матч добавлен.";
-
-      }
-
-
-      resetMatchForm();
-
-      await loadMatches();
-
-
-    }catch(error){
-
-      status.className =
-        "status error";
-
-      status.textContent =
-        "Ошибка: " +
-        error.message;
-
-    }
-
+  roleFields.forEach(([,key])=>{
+    const value = $(key)?.value;
+    data[key] = value ? Number(value) : null;
   });
 
-
-/* ================= MATCH LIST ================= */
-
-
-async function loadMatches(){
-
-  const box =
-    document.getElementById("matchList");
-
-
   try{
+    if(editingMatchId){
+      await api(`matches?id=eq.${editingMatchId}`,{
+        method:"PATCH",
+        headers:{"Prefer":"return=minimal"},
+        body:JSON.stringify(data)
+      });
+      status.textContent = "Матч изменён.";
+    }else{
+      await api("matches",{
+        method:"POST",
+        headers:{"Prefer":"return=minimal"},
+        body:JSON.stringify(data)
+      });
+      status.textContent = "Матч добавлен.";
+    }
 
-    const matches =
-      await api(
-        "matches?select=*&order=match_date.asc,match_time.asc"
-      );
-
-
-    box.innerHTML =
-
-      matches.length
-
-        ? matches.map(match=>`
-
-            <div class="list-item">
-
-              <span>
-
-                <b>
-                  ${esc(match.team1)}
-                  —
-                  ${esc(match.team2)}
-                </b>
-
-                <br>
-
-                ${esc(
-                  formatDateWithWeekday(
-                    match.match_date
-                  )
-                )}
-
-                ·
-
-                ${esc(match.match_time || "")}
-
-                ·
-
-                ${esc(match.place || "")}
-
-                <br>
-
-                <small>
-
-                  ${
-                    isArchived(match)
-                      ? "АРХИВ"
-                      : "ПРЕДСТОЯЩИЙ"
-                  }
-
-                </small>
-
-              </span>
-
-
-              <div
-                style="display:flex;gap:7px;flex-wrap:wrap"
-              >
-
-                <a
-                  class="small-btn"
-                  href="match.html?id=${match.id}"
-                >
-                  Открыть
-                </a>
-
-
-                <button
-                  class="small-btn"
-                  onclick='editMatch(${JSON.stringify(match).replace(/'/g,"&#39;")})'
-                >
-                  Изменить
-                </button>
-
-
-                <button
-                  class="small-btn"
-                  onclick="deleteMatch(${match.id})"
-                >
-                  Удалить
-                </button>
-
-              </div>
-
-            </div>
-
-          `).join("")
-
-        : `
-          <div class="empty">
-            Матчей пока нет.
-          </div>
-        `;
-
-
-  }catch(error){
-
-    box.innerHTML =
-      `<div class="status error">
-        Ошибка: ${esc(error.message)}
-      </div>`;
-
-  }
-
-}
-
-
-async function deleteMatch(id){
-
-  if(
-    !confirm(
-      "Удалить матч?"
-    )
-  ) return;
-
-
-  try{
-
-    await api(
-      `matches?id=eq.${id}`,
-      {
-        method:"DELETE"
-      }
-    );
-
-
+    status.className = "status ok";
+    resetMatchForm();
     await loadMatches();
 
+  }catch(error){
+    status.className = "status error";
+    status.textContent = "Ошибка: "+error.message;
+  }
+});
+
+async function loadMatches(){
+  const box = $("matchList");
+
+  try{
+    const matches = await api("matches?select=*&order=match_date.asc,match_time.asc");
+
+    box.innerHTML = matches.length
+      ? matches.map(match=>`
+        <div class="list-item">
+          <span>
+            <b>${esc(match.team1)} — ${esc(match.team2)}</b><br>
+            ${esc(formatDateWithWeekday(match.match_date))}
+            · ${esc(match.match_time || "")}
+            · ${esc(match.place || "")}<br>
+            <small>${isArchived(match) ? "АРХИВ" : "ПРЕДСТОЯЩИЙ"}</small>
+          </span>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <a class="small-btn" href="match.html?id=${Number(match.id)}">Открыть</a>
+            <button class="small-btn" onclick="editMatchById(${Number(match.id)})">Изменить</button>
+            <button class="small-btn" onclick="deleteMatch(${Number(match.id)})">Удалить</button>
+          </div>
+        </div>
+      `).join("")
+      : `<div class="empty">Матчей пока нет.</div>`;
+
+    window.matchCache = matches;
 
   }catch(error){
+    box.innerHTML = `<div class="status error">Ошибка: ${esc(error.message)}</div>`;
+  }
+}
 
-    alert(
-      "Ошибка: " +
-      error.message
-    );
+function editMatchById(id){
+  const match = (window.matchCache || []).find(item=>Number(item.id)===Number(id));
+  if(match) editMatch(match);
+}
 
+async function deleteMatch(id){
+  if(!confirm("Удалить матч?")) return;
+
+  try{
+    await api(`matches?id=eq.${id}`,{method:"DELETE"});
+    await loadMatches();
+  }catch(error){
+    alert("Ошибка: "+error.message);
+  }
+}
+
+/* POLL OPTION EDITOR */
+
+function addPollOption(){
+  const id = ++pollOptionCounter;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "option-editor";
+  wrapper.dataset.optionId = id;
+
+  wrapper.innerHTML = `
+    <div class="option-editor-head">
+      <span>ВАРИАНТ ${id}</span>
+      <button type="button" class="remove-option">УДАЛИТЬ</button>
+    </div>
+
+    <div class="option-grid">
+      <div>
+        <label>ДАТА ИГР</label>
+        <input class="option-date" type="date" required>
+      </div>
+      <div>
+        <label>КОЛИЧЕСТВО ИГР</label>
+        <input class="option-games" type="number" min="1" max="99" value="1" required>
+      </div>
+    </div>
+  `;
+
+  wrapper.querySelector(".remove-option").addEventListener("click",()=>wrapper.remove());
+  $("pollOptionsEditor").appendChild(wrapper);
+}
+
+$("addPollOption").addEventListener("click",addPollOption);
+
+function formatMoscowDateTime(value){
+  if(!value) return "";
+
+  const date = new Date(value);
+
+  return new Intl.DateTimeFormat("ru-RU",{
+    timeZone:"Europe/Moscow",
+    day:"2-digit",
+    month:"2-digit",
+    year:"numeric",
+    hour:"2-digit",
+    minute:"2-digit"
+  }).format(date);
+}
+
+function moscowInputToISO(value){
+  if(!value) throw new Error("Укажи дату окончания голосования.");
+
+  const date = new Date(value+":00+03:00");
+
+  if(Number.isNaN(date.getTime())) throw new Error("Неверная дата окончания.");
+
+  return date.toISOString();
+}
+
+function pollIsClosed(poll){
+  return new Date(poll.closes_at).getTime() <= Date.now();
+}
+
+function pollStatusLabel(poll){
+  if(pollIsClosed(poll)) return "ЗАКРЫТО";
+  return poll.is_published ? "ОПУБЛИКОВАНО" : "ЧЕРНОВИК";
+}
+
+/* CREATE POLL */
+
+$("pollForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  const status = $("pollStatus");
+  const button = $("createPollButton");
+
+  const optionRows = [...$("pollOptionsEditor").querySelectorAll(".option-editor")];
+
+  if(!optionRows.length){
+    status.className = "status error";
+    status.textContent = "Добавь хотя бы один вариант ответа.";
+    return;
   }
 
-}
+  const options = optionRows.map(row=>{
+    const date = row.querySelector(".option-date").value;
+    const games = Number(row.querySelector(".option-games").value);
 
+    if(!date || !Number.isInteger(games) || games < 1 || games > 99){
+      throw new Error("Проверь даты и количество игр во всех вариантах.");
+    }
 
-/* ================= START ================= */
+    return {
+      label:`${formatDate(date)} — ${games} ${gamesWord(games)}`,
+      option_date:date,
+      games_count:games,
+      is_unavailable:false
+    };
+  });
 
+  try{
+    button.disabled = true;
+    button.textContent = "СОЗДАНИЕ...";
+    status.className = "status";
+    status.textContent = "Создаём голосование...";
 
-if(getSession()){
+    const deadline = moscowInputToISO($("pollDeadline").value);
 
-  showAdmin();
+    if(new Date(deadline).getTime() <= Date.now()){
+      throw new Error("Дата окончания должна быть в будущем.");
+    }
 
-  loadRefs()
-    .then(loadMatches)
-    .catch(error=>{
-
-      showLogin();
-
-      console.error(error);
-
+    const created = await api("polls",{
+      method:"POST",
+      headers:{"Prefer":"return=representation"},
+      body:JSON.stringify({
+        title:$("pollTitle").value.trim(),
+        description:$("pollDescription").value.trim() || null,
+        closes_at:deadline,
+        is_published:false
+      })
     });
 
-}else{
+    const poll = Array.isArray(created) ? created[0] : created;
 
-  showLogin();
+    if(!poll?.id) throw new Error("Голосование создано, но ID не получен.");
 
+    await api("poll_options",{
+      method:"POST",
+      headers:{"Prefer":"return=minimal"},
+      body:JSON.stringify(options.map(option=>({
+        poll_id:poll.id,
+        ...option
+      })))
+    });
+
+    await api(`polls?id=eq.${poll.id}`,{
+      method:"PATCH",
+      headers:{"Prefer":"return=minimal"},
+      body:JSON.stringify({is_published:true})
+    });
+
+    $("pollForm").reset();
+    $("pollOptionsEditor").innerHTML = "";
+    addPollOption();
+
+    status.className = "status ok";
+    status.textContent = "Голосование опубликовано.";
+
+    await loadPolls();
+
+  }catch(error){
+    status.className = "status error";
+    status.textContent = "Ошибка: "+error.message;
+  }finally{
+    button.disabled = false;
+    button.textContent = "СОЗДАТЬ И ОПУБЛИКОВАТЬ";
+  }
+});
+
+function gamesWord(number){
+  const n = Math.abs(number)%100;
+  const last = n%10;
+
+  if(n>10 && n<20) return "игр";
+  if(last===1) return "игра";
+  if(last>=2 && last<=4) return "игры";
+  return "игр";
 }
 
+/* LOAD POLLS */
+
+async function loadPolls(){
+  const box = $("pollList");
+
+  try{
+    const polls = await api("polls?select=*&order=created_at.desc");
+
+    box.innerHTML = polls.length
+      ? polls.map(poll=>`
+        <article class="poll-admin-card">
+          <h3>${esc(poll.title)}</h3>
+
+          <div class="poll-admin-meta">
+            ${esc(poll.description || "")}<br>
+            Окончание: ${esc(formatMoscowDateTime(poll.closes_at))} МСК
+          </div>
+
+          <span class="poll-status ${pollIsClosed(poll) ? "closed" : "open"}">
+            ${esc(pollStatusLabel(poll))}
+          </span>
+
+          <div class="poll-admin-actions">
+            <button class="small-btn" onclick="showPollResults(${Number(poll.id)})">Результаты</button>
+            ${!pollIsClosed(poll) ? `<button class="small-btn" onclick="closePoll(${Number(poll.id)})">Закрыть досрочно</button>` : ""}
+          </div>
+        </article>
+      `).join("")
+      : `<div class="empty">Голосований пока нет.</div>`;
+
+  }catch(error){
+    box.innerHTML = `<div class="status error">Ошибка загрузки: ${esc(error.message)}</div>`;
+  }
+}
+
+/* CLOSE POLL */
+
+async function closePoll(id){
+  if(!confirm("Досрочно закрыть голосование?")) return;
+
+  try{
+    const closedAt = new Date(Date.now()-5000).toISOString();
+
+    await api(`polls?id=eq.${id}`,{
+      method:"PATCH",
+      headers:{"Prefer":"return=minimal"},
+      body:JSON.stringify({closes_at:closedAt})
+    });
+
+    await loadPolls();
+    await showPollResults(id);
+
+  }catch(error){
+    alert("Ошибка: "+error.message);
+  }
+}
+
+/* POLL RESULTS */
+
+async function showPollResults(pollId){
+  const section = $("pollDetails");
+  const content = $("pollDetailsContent");
+
+  section.classList.remove("hidden");
+  content.innerHTML = `<div class="status">Загрузка результатов...</div>`;
+
+  try{
+    const [pollRows,options,votes,refs] = await Promise.all([
+      api(`polls?select=*&id=eq.${pollId}`),
+      api(`poll_options?select=*&poll_id=eq.${pollId}&order=created_at.asc`),
+      api(`poll_votes?select=*&poll_id=eq.${pollId}&order=updated_at.desc`),
+      api("referees?select=id,name,login&order=name.asc")
+    ]);
+
+    const poll = pollRows[0];
+
+    if(!poll) throw new Error("Голосование не найдено.");
+
+    $("pollDetailsTitle").textContent = "РЕЗУЛЬТАТЫ: "+poll.title;
+
+    const refMap = new Map(refs.map(ref=>[String(ref.id),ref]));
+    const totalVotes = votes.length;
+
+    content.innerHTML = `
+      <div class="poll-admin-meta">
+        Всего проголосовало: <b>${totalVotes}</b><br>
+        Окончание: ${esc(formatMoscowDateTime(poll.closes_at))} МСК
+      </div>
+
+      <h3 style="font-size:13px;margin-top:22px">ВАРИАНТЫ И РЕЗУЛЬТАТЫ</h3>
+
+      ${options.map(option=>{
+        const optionVotes = votes.filter(vote=>String(vote.option_id)===String(option.id));
+        const percent = totalVotes ? Math.round(optionVotes.length/totalVotes*100) : 0;
+
+        return `
+          <div class="poll-result-option">
+            <b>${esc(option.label)}</b>
+            <div style="color:var(--muted);margin-top:6px">
+              ${optionVotes.length} голосов · ${percent}%
+            </div>
+            <div style="height:6px;background:#eee;border-radius:10px;margin-top:9px;overflow:hidden">
+              <div style="height:100%;width:${percent}%;background:var(--orange)"></div>
+            </div>
+          </div>
+        `;
+      }).join("")}
+
+      <h3 style="font-size:13px;margin-top:24px">СПИСОК ГОЛОСОВ</h3>
+
+      ${votes.length ? votes.map(vote=>{
+        const referee = refMap.get(String(vote.referee_id));
+        const option = options.find(item=>String(item.id)===String(vote.option_id));
+
+        return `
+          <div class="poll-result-vote">
+            <b>${esc(referee?.name || "Неизвестный судья")}</b>
+            <br>
+            Логин: ${esc(referee?.login || "—")}
+            <br>
+            Ответ: ${esc(option?.label || "Неизвестный вариант")}
+            ${vote.comment ? `<br>Комментарий: ${esc(vote.comment)}` : ""}
+            <br>
+            <span style="color:var(--muted)">
+              ${esc(formatMoscowDateTime(vote.updated_at))} МСК
+            </span>
+          </div>
+        `;
+      }).join("") : `<div class="empty">Голосов пока нет.</div>`}
+    `;
+
+    section.scrollIntoView({behavior:"smooth",block:"start"});
+
+  }catch(error){
+    content.innerHTML = `<div class="status error">Ошибка: ${esc(error.message)}</div>`;
+  }
+}
+
+/* START */
+
+async function startAdmin(){
+  showAdmin();
+
+  try{
+    await loadRefs();
+    await loadMatches();
+    await loadPolls();
+  }catch(error){
+    console.error(error);
+    showLogin();
+  }
+}
+
+if(getSession()){
+  startAdmin();
+}else{
+  showLogin();
+}
+
+addPollOption();
 </script>
 
 </body>
-
 </html>
