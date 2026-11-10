@@ -117,6 +117,14 @@ const pollsBox = document.getElementById("polls");
 const pageTitle = document.getElementById("pageTitle");
 const pageSubtitle = document.getElementById("pageSubtitle");
 
+const POLL_LOGIN_KEY = "ref_hockey_poll_login";
+
+let currentRefereeLogin = "";
+let currentRefereeId = null;
+let currentRefereeName = "";
+
+let selectedPollOptions = {};
+
 /* --------------------------------
    ДЕНЬ РОЖДЕНИЯ
 -------------------------------- */
@@ -261,7 +269,7 @@ async function loadMatches(){
 }
 
 /* --------------------------------
-   ФОРМАТИРОВАНИЕ ДАТЫ ГОЛОСОВАНИЯ
+   ФОРМАТИРОВАНИЕ ДЕДЛАЙНА
 -------------------------------- */
 
 function formatPollDeadline(value){
@@ -285,6 +293,189 @@ function formatPollDeadline(value){
 }
 
 /* --------------------------------
+   ВХОД ПО ЛОГИНУ
+-------------------------------- */
+
+async function resolveRefereeLogin(login){
+
+  const referees = await api(
+    "referees?select=id,name&login=eq." +
+    encodeURIComponent(login)
+  );
+
+  if(!referees || !referees.length){
+    throw new Error("Судья с таким логином не найден.");
+  }
+
+  currentRefereeId = referees[0].id;
+  currentRefereeName = referees[0].name || "Судья";
+  currentRefereeLogin = login;
+
+}
+
+async function loginPollUser(event){
+
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const input = form.elements.login;
+  const button = form.querySelector("button");
+
+  const login = input.value.trim().toUpperCase();
+
+  if(!/^[A-Z]{2}[0-9]{2}$/.test(login)){
+
+    statusBox.className = "status error";
+    statusBox.textContent =
+      "Введите логин из двух английских букв и двух цифр.";
+
+    return;
+
+  }
+
+  button.disabled = true;
+  button.textContent = "ПРОВЕРКА...";
+
+  try{
+
+    await resolveRefereeLogin(login);
+
+    sessionStorage.setItem(POLL_LOGIN_KEY,login);
+
+    selectedPollOptions = {};
+
+    await loadPolls();
+
+    statusBox.className = "status ok";
+    statusBox.textContent =
+      "Вход выполнен. Теперь можно выбирать варианты.";
+
+  }catch(error){
+
+    currentRefereeId = null;
+    currentRefereeName = "";
+    currentRefereeLogin = "";
+
+    statusBox.className = "status error";
+    statusBox.textContent = error.message;
+
+    button.disabled = false;
+    button.textContent = "ВОЙТИ";
+
+  }
+
+}
+
+async function logoutPollUser(){
+
+  sessionStorage.removeItem(POLL_LOGIN_KEY);
+
+  currentRefereeLogin = "";
+  currentRefereeId = null;
+  currentRefereeName = "";
+
+  selectedPollOptions = {};
+
+  statusBox.className = "status";
+  statusBox.textContent = "Вы вышли из аккаунта.";
+
+  await loadPolls();
+
+}
+
+/* --------------------------------
+   ПАНЕЛЬ ВХОДА
+-------------------------------- */
+
+function renderPollLogin(){
+
+  if(currentRefereeId){
+
+    return `
+
+      <section class="poll-login-panel logged-in">
+
+        <div class="poll-login-info">
+
+          <div class="poll-login-label">
+            ВЫ ВОШЛИ КАК
+          </div>
+
+          <div class="poll-login-name">
+            ${esc(currentRefereeName)}
+          </div>
+
+          <div class="poll-login-code">
+            ${esc(currentRefereeLogin)}
+          </div>
+
+        </div>
+
+        <button
+          class="poll-logout"
+          type="button"
+          onclick="logoutPollUser()"
+        >
+          ВЫЙТИ
+        </button>
+
+      </section>
+
+    `;
+
+  }
+
+  return `
+
+    <section class="poll-login-panel">
+
+      <div class="poll-login-info">
+
+        <div class="poll-login-label">
+          УЧАСТИЕ В ГОЛОСОВАНИЯХ
+        </div>
+
+        <div class="poll-login-heading">
+          Войдите по логину судьи
+        </div>
+
+        <div class="poll-login-description">
+          Логин сохранится на этом устройстве до завершения сессии.
+        </div>
+
+      </div>
+
+      <form
+        class="poll-login-form"
+        onsubmit="loginPollUser(event)"
+      >
+
+        <input
+          name="login"
+          type="text"
+          maxlength="4"
+          minlength="4"
+          pattern="[A-Za-z]{2}[0-9]{2}"
+          placeholder="Например, XJ70"
+          autocomplete="off"
+          autocapitalize="characters"
+          required
+          oninput="this.value=this.value.toUpperCase()"
+        >
+
+        <button class="btn" type="submit">
+          ВОЙТИ
+        </button>
+
+      </form>
+
+    </section>
+
+  `;
+
+}
+
+/* --------------------------------
    ЗАГРУЗКА ГОЛОСОВАНИЙ
 -------------------------------- */
 
@@ -296,22 +487,36 @@ async function loadPolls(){
 
   try{
 
+    const savedLogin =
+      sessionStorage.getItem(POLL_LOGIN_KEY);
+
+    if(savedLogin){
+
+      try{
+
+        await resolveRefereeLogin(savedLogin);
+
+      }catch(error){
+
+        sessionStorage.removeItem(POLL_LOGIN_KEY);
+
+        currentRefereeLogin = "";
+        currentRefereeId = null;
+        currentRefereeName = "";
+
+      }
+
+    }else{
+
+      currentRefereeLogin = "";
+      currentRefereeId = null;
+      currentRefereeName = "";
+
+    }
+
     const polls = await api(
       "polls?select=*&is_published=eq.true&order=created_at.desc"
     );
-
-    if(!polls || !polls.length){
-
-      statusBox.textContent = "";
-
-      pollsBox.innerHTML = `
-        <div class="empty">
-          Опубликованных голосований пока нет.
-        </div>
-      `;
-
-      return;
-    }
 
     const referees = await api(
       "referees?select=id,name&order=name.asc"
@@ -323,6 +528,21 @@ async function loadPolls(){
         referee.name
       ])
     );
+
+    if(!polls || !polls.length){
+
+      statusBox.textContent = "";
+
+      pollsBox.innerHTML =
+        renderPollLogin() + `
+          <div class="empty">
+            Опубликованных голосований пока нет.
+          </div>
+        `;
+
+      return;
+
+    }
 
     const pollData = await Promise.all(
       polls.map(async poll => {
@@ -351,11 +571,30 @@ async function loadPolls(){
       })
     );
 
+    selectedPollOptions = {};
+
+    if(currentRefereeId){
+
+      pollData.forEach(data => {
+
+        selectedPollOptions[String(data.poll.id)] =
+          data.votes
+            .filter(vote =>
+              String(vote.referee_id) === String(currentRefereeId)
+            )
+            .map(vote => String(vote.option_id));
+
+      });
+
+    }
+
     statusBox.textContent = "";
 
-    pollsBox.innerHTML = pollData.map(data =>
-      renderPoll(data,refereeNames)
-    ).join("");
+    pollsBox.innerHTML =
+      renderPollLogin() +
+      pollData.map(data =>
+        renderPoll(data,refereeNames)
+      ).join("");
 
   }catch(error){
 
@@ -370,6 +609,7 @@ async function loadPolls(){
     `;
 
   }
+
 }
 
 /* --------------------------------
@@ -386,7 +626,15 @@ function renderPoll(data,refereeNames){
     !poll.closes_at ||
     new Date(poll.closes_at).getTime() <= Date.now();
 
-  const totalVotes = votes.length;
+  // Считаем уникальных участников, а не количество выбранных вариантов.
+  const participants = new Set(
+    votes.map(vote => String(vote.referee_id))
+  );
+
+  const totalParticipants = participants.size;
+
+  const myOptions =
+    selectedPollOptions[String(poll.id)] || [];
 
   const votersByOption = new Map();
 
@@ -416,14 +664,19 @@ function renderPoll(data,refereeNames){
       vote => String(vote.option_id) === String(option.id)
     );
 
-    const count = optionVotes.length;
+    const count = new Set(
+      optionVotes.map(vote => String(vote.referee_id))
+    ).size;
 
-    const percent = totalVotes
-      ? Math.round(count / totalVotes * 100)
+    const percent = totalParticipants
+      ? Math.round(count / totalParticipants * 100)
       : 0;
 
     const voters = (votersByOption.get(String(option.id)) || [])
       .sort((a,b) => a.localeCompare(b,"ru"));
+
+    const isSelected =
+      myOptions.includes(String(option.id));
 
     const details = [];
 
@@ -455,66 +708,87 @@ function renderPoll(data,refereeNames){
 
     }
 
+    const canChoose =
+      !closed && Boolean(currentRefereeId);
+
     return `
 
-      <div class="poll-option">
+      <label
+        class="poll-option ${isSelected ? "is-selected" : ""} ${!canChoose ? "is-disabled" : ""}"
+        data-poll-id="${esc(poll.id)}"
+        data-option-id="${esc(option.id)}"
+      >
 
-        <div class="poll-option-top">
+        <input
+          class="poll-option-input"
+          type="checkbox"
+          value="${esc(option.id)}"
+          ${isSelected ? "checked" : ""}
+          ${!canChoose ? "disabled" : ""}
+          onchange="togglePollOption(${Number(poll.id)},${Number(option.id)},this)"
+        >
 
-          <div class="poll-option-name">
-            ${esc(option.label)}
+        <div class="poll-option-content">
+
+          <div class="poll-option-top">
+
+            <div class="poll-option-name">
+              ${esc(option.label)}
+            </div>
+
+            <div class="poll-option-right">
+
+              <div class="poll-option-count">
+                ${count} · ${percent}%
+              </div>
+
+              <span class="poll-checkmark"></span>
+
+            </div>
+
           </div>
-
-          <div class="poll-option-count">
-            ${count} · ${percent}%
-          </div>
-
-        </div>
-
-        ${
-          details.length
-            ? `<div class="poll-option-details">${details.map(esc).join(" · ")}</div>`
-            : ""
-        }
-
-        <div class="poll-progress">
-          <div
-            class="poll-progress-fill"
-            style="width:${percent}%"
-          ></div>
-        </div>
-
-        <div class="poll-voters">
 
           ${
-            voters.length
-              ? voters.map(name => `
-                  <span class="poll-voter">
-                    ${esc(name)}
-                  </span>
-                `).join("")
-              : `<span class="poll-no-voters">Пока никто не выбрал этот вариант</span>`
+            details.length
+              ? `<div class="poll-option-details">${details.map(esc).join(" · ")}</div>`
+              : ""
           }
+
+          <div class="poll-progress">
+            <div
+              class="poll-progress-fill"
+              style="width:${percent}%"
+            ></div>
+          </div>
+
+          <div class="poll-option-footer">
+
+            <div class="poll-voters">
+
+              ${
+                voters.length
+                  ? voters.map(name => `
+                      <span class="poll-voter">
+                        ${esc(name)}
+                      </span>
+                    `).join("")
+                  : `<span class="poll-no-voters">Пока никто не выбрал этот вариант</span>`
+              }
+
+            </div>
+
+            <span
+              class="poll-your-choice"
+              ${isSelected ? "" : "hidden"}
+            >
+              ВАШ ВЫБОР
+            </span>
+
+          </div>
 
         </div>
 
-        ${
-          !closed
-            ? `
-              <label class="poll-choice">
-                <input
-                  type="radio"
-                  name="poll_option_${esc(poll.id)}"
-                  value="${esc(option.id)}"
-                  required
-                >
-                <span>Выбрать этот вариант</span>
-              </label>
-            `
-            : ""
-        }
-
-      </div>
+      </label>
 
     `;
 
@@ -522,7 +796,7 @@ function renderPoll(data,refereeNames){
 
   return `
 
-    <article class="poll-card">
+    <article class="poll-card" id="poll_${esc(poll.id)}">
 
       <div class="poll-card-head">
 
@@ -548,20 +822,27 @@ function renderPoll(data,refereeNames){
       }
 
       <div class="poll-total">
-        <strong>${totalVotes}</strong>
-        <span>${getVotersWord(totalVotes)}</span>
+
+        <strong>${totalParticipants}</strong>
+
+        <span>
+          ${getParticipantsWord(totalParticipants)}
+        </span>
+
       </div>
 
       <div class="poll-options">
+
         ${
           options.length
             ? optionsHTML
             : `<div class="poll-no-options">Варианты голосования не добавлены.</div>`
         }
+
       </div>
 
       ${
-        !closed && options.length
+        !closed && options.length && currentRefereeId
           ? `
             <form
               class="poll-vote-form"
@@ -569,60 +850,45 @@ function renderPoll(data,refereeNames){
             >
 
               <div class="poll-form-title">
-                ОТДАТЬ ГОЛОС
+                ВАШ ВЫБОР
               </div>
 
-              <div class="poll-form-grid">
+              <div>
+                <label for="poll_comment_${esc(poll.id)}">
+                  Комментарий (необязательно)
+                </label>
 
-                <div>
-                  <label for="poll_login_${esc(poll.id)}">
-                    Логин судьи
-                  </label>
-
-                  <input
-                    id="poll_login_${esc(poll.id)}"
-                    name="login"
-                    type="text"
-                    maxlength="4"
-                    minlength="4"
-                    pattern="[A-Za-z]{2}[0-9]{2}"
-                    placeholder="Например, XJ70"
-                    autocomplete="off"
-                    required
-                  >
-                </div>
-
-                <div>
-                  <label for="poll_comment_${esc(poll.id)}">
-                    Комментарий (необязательно)
-                  </label>
-
-                  <input
-                    id="poll_comment_${esc(poll.id)}"
-                    name="comment"
-                    type="text"
-                    maxlength="1000"
-                    placeholder="Ваш комментарий"
-                  >
-                </div>
-
+                <input
+                  id="poll_comment_${esc(poll.id)}"
+                  name="comment"
+                  type="text"
+                  maxlength="1000"
+                  placeholder="Ваш комментарий"
+                >
               </div>
 
               <button class="btn poll-submit" type="submit">
-                ПРОГОЛОСОВАТЬ
+                СОХРАНИТЬ ВЫБОР
               </button>
 
               <div class="poll-form-note">
-                Голос можно изменить до окончания голосования.
+                Можно выбрать несколько вариантов.
+                Выбор можно изменить до окончания голосования.
               </div>
 
             </form>
           `
-          : `
-            <div class="poll-closed-note">
-              Голосование завершено. Просмотр результатов доступен.
-            </div>
-          `
+          : !closed && options.length
+            ? `
+              <div class="poll-login-required">
+                Войдите по логину судьи выше, чтобы выбрать варианты.
+              </div>
+            `
+            : `
+              <div class="poll-closed-note">
+                Голосование завершено. Просмотр результатов доступен.
+              </div>
+            `
       }
 
     </article>
@@ -632,19 +898,76 @@ function renderPoll(data,refereeNames){
 }
 
 /* --------------------------------
+   ИЗМЕНЕНИЕ ВЫБОРА
+-------------------------------- */
+
+function togglePollOption(pollId,optionId,checkbox){
+
+  if(!currentRefereeId){
+
+    checkbox.checked = false;
+    return;
+
+  }
+
+  const pollKey = String(pollId);
+  const optionKey = String(optionId);
+
+  if(!selectedPollOptions[pollKey]){
+    selectedPollOptions[pollKey] = [];
+  }
+
+  let selected = selectedPollOptions[pollKey];
+
+  if(checkbox.checked){
+
+    if(!selected.includes(optionKey)){
+      selected.push(optionKey);
+    }
+
+  }else{
+
+    selected = selected.filter(
+      id => id !== optionKey
+    );
+
+  }
+
+  selectedPollOptions[pollKey] = selected;
+
+  const card = checkbox.closest(".poll-option");
+
+  if(card){
+
+    card.classList.toggle(
+      "is-selected",
+      checkbox.checked
+    );
+
+    const badge = card.querySelector(".poll-your-choice");
+
+    if(badge){
+      badge.hidden = !checkbox.checked;
+    }
+
+  }
+
+}
+
+/* --------------------------------
    СЛОВОФОРМЫ
 -------------------------------- */
 
-function getVotersWord(number){
+function getParticipantsWord(number){
 
   const n = Math.abs(number) % 100;
   const last = n % 10;
 
-  if(n > 10 && n < 20) return "проголосовавших";
-  if(last === 1) return "проголосовавший";
-  if(last >= 2 && last <= 4) return "проголосовавших";
+  if(n > 10 && n < 20) return "участников";
+  if(last === 1) return "участник";
+  if(last >= 2 && last <= 4) return "участника";
 
-  return "проголосовавших";
+  return "участников";
 }
 
 function getGamesWord(number){
@@ -660,7 +983,7 @@ function getGamesWord(number){
 }
 
 /* --------------------------------
-   ОТПРАВКА ГОЛОСА
+   СОХРАНЕНИЕ ГОЛОСА
 -------------------------------- */
 
 async function submitPollVote(event,pollId){
@@ -670,32 +993,33 @@ async function submitPollVote(event,pollId){
   const form = event.currentTarget;
   const button = form.querySelector("button[type='submit']");
 
-  const login = form.elements.login.value
-    .trim()
-    .toUpperCase();
+  if(!currentRefereeId || !currentRefereeLogin){
+
+    statusBox.className = "status error";
+    statusBox.textContent =
+      "Сначала войдите по логину судьи.";
+
+    return;
+
+  }
+
+  const selected =
+    selectedPollOptions[String(pollId)] || [];
+
+  if(!selected.length){
+
+    statusBox.className = "status error";
+    statusBox.textContent =
+      "Выберите хотя бы один вариант.";
+
+    return;
+
+  }
 
   const comment = form.elements.comment.value.trim();
 
-  const selected = document.querySelector(
-    `input[name="poll_option_${pollId}"]:checked`
-  );
-
-  if(!/^[A-Z]{2}[0-9]{2}$/.test(login)){
-
-    alert("Введите корректный логин судьи из двух букв и двух цифр.");
-    return;
-
-  }
-
-  if(!selected){
-
-    alert("Сначала выберите вариант голосования.");
-    return;
-
-  }
-
   button.disabled = true;
-  button.textContent = "ОТПРАВКА...";
+  button.textContent = "СОХРАНЕНИЕ...";
 
   try{
 
@@ -703,9 +1027,9 @@ async function submitPollVote(event,pollId){
       method:"POST",
       body:JSON.stringify({
 
-        p_login:login,
+        p_login:currentRefereeLogin,
         p_poll_id:Number(pollId),
-        p_option_id:Number(selected.value),
+        p_option_ids:selected.map(Number),
         p_comment:comment || null
 
       })
@@ -714,7 +1038,7 @@ async function submitPollVote(event,pollId){
     if(result && result.success === false){
 
       throw new Error(
-        result.message || "Не удалось сохранить голос."
+        result.message || "Не удалось сохранить выбор."
       );
 
     }
@@ -725,16 +1049,16 @@ async function submitPollVote(event,pollId){
     statusBox.textContent =
       result && result.message
         ? result.message
-        : "Ваш голос успешно сохранён.";
+        : "Ваш выбор успешно сохранён.";
 
   }catch(error){
 
     statusBox.className = "status error";
     statusBox.textContent =
-      "Не удалось проголосовать: " + error.message;
+      "Не удалось сохранить выбор: " + error.message;
 
     button.disabled = false;
-    button.textContent = "ПРОГОЛОСОВАТЬ";
+    button.textContent = "СОХРАНИТЬ ВЫБОР";
 
   }
 
